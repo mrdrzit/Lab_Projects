@@ -41,68 +41,63 @@ print("list length is " + list_file_names.length)
 qtd = list_file_names.length
 
 //Loop que faz o processamento das imagens
-Array.sort(list);
-print("list length is " + list.length)
-qtd = list.length
 for ( i=0; i < qtd; i++ ) {
 	showProgress(i, qtd);
 	atual = i + 1;
 	
 	
-	print("Estou processando a foto " + (i+1) + " para você");
-    open("D:/Analise/tests/animal1cx35F11BO40x" + atual + ".zvi");
-
+	print("Estou processando a foto " + list_file_names[i] + " para você");
+	current_image = dir+list_file_names[i];
+	print(current_image);
+    open(current_image);
     run("Show All");
-	list = getList("image.titles"); 
+	list_open_filters = getList("image.titles"); //Faz um array com o nome das janelas abertas
 	
-	//Faz a compressão da série Z retirando as 2 primeiras e duas últimas imagens
-	for (j=0; j<list.length; j++) {
-		selectWindow(list[j]);
-		run("Z Project...", "start=2 stop=8 projection=[Max Intensity]");
-		selectWindow(list[j]);
+	//Faz a compressão da série Z retirando as primeiras e últimas imagens pedidas pelo usuário
+	for (j=0; j<list_open_filters.length; j++) {
+		selectWindow(list_open_filters[j]);
+		run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
+		selectWindow(list_open_filters[j]);
 		close();
 	}
 	
-	run("Show All");
-	list = getList("image.titles");
+	run("Show All"); //Isso sempre vem antes pra ter certeza que todas as imagens que foram abertas podem ser selecionadas (a.k.a.: não estão minimizadas)
+	list_open_filters = getList("image.titles"); //Refaz o array porque a operação de comprimir a série Z muda o nome da imagem
 	
 	//Retira o background
 	//Aqui apenas o filtro do BRDU não é com um rolling window de 30px
 	
-	for (k=0; k<list.length; k++) {
-		if (indexOf(list[k], "C=0") >= 0) {
-			selectWindow(list[k]);
-			run("Subtract Background...", "rolling=30");
+	for (k=0; k<list_open_filters.length; k++) {
+		if (indexOf(list_open_filters[k], "C=0") >= 0) {
+			selectWindow(list_open_filters[k]);
+			run("Subtract Background...", "rolling="+rolling_dcx);
 			setOption("ScaleConversions", true);
 			run("8-bit");
-		}else if (indexOf(list[k], "C=1") >= 0) {
-			selectWindow(list[k]);
-			run("Subtract Background...", "rolling=30");
+		}else if (indexOf(list_open_filters[k], "C=1") >= 0) {
+			selectWindow(list_open_filters[k]);
+			run("Subtract Background...", "rolling="+rolling_dapi);
 			setOption("ScaleConversions", true);
 			run("8-bit");
-		}else if (indexOf(list[k], "C=2") >= 0) {
-			selectWindow(list[k]);
-			run("Subtract Background...", "rolling=50");
+		}else if (indexOf(list_open_filters[k], "C=2") >= 0) {
+			selectWindow(list_open_filters[k]);
+			run("Subtract Background...", "rolling="+rolling_brdu);
 			setOption("ScaleConversions", true);
 			run("8-bit");
 		}
 	}
 	
 	//Faz o composite com as três imagens sem background
-	Array.sort(list);
-	run("Merge Channels...", "c2=["+ list[2] + "] c3=[" + list[0] + "] c6=[" + list[1] + "] create keep");
+	Array.sort(list_open_filters);
+	run("Merge Channels...", "c2=["+ list_open_filters[2] + "] c3=[" + list_open_filters[0] + "] c6=[" + list_open_filters[1] + "] create keep");
 	
 	//Seleciona todas as imagaens e salva o composite como um .TIF para análise
 	run("Show All");
-	list = getList("image.titles");
+	list_open_filters = getList("image.titles");
 	
 	nome_atual = File.nameWithoutExtension;
-//	working_dir = File.directory;
 	
 	selectImage("Composite");
-	saveAs("Tiff", output + nome_atual + ".tif");
-	
-	nome_da_foto_composite = nome_atual + ".tif";
+	saveAs("PNG", output + nome_atual + ".png");
 	
 	run("Show All");
 	list = getList("image.titles");
