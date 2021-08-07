@@ -1,20 +1,46 @@
 print("\\Clear");
-dir = getDirectory( "Choose the Directory" );
-output = getDirectory( "Choose destination" );
+dir = getDirectory( "Onde estão as fotos?" );
+output = getDirectory( "Onde você quer guardá-las?" );
+
+dir = replace(dir, "\\", "/"); // Conserta o nome do diretório para windows, colocando '/'
+output = replace(output, "\\", "/");
+
+//Crio uma janela para o usuário indicar quais valores serão usados no processamento
+//TODO: Modular com base nos filtros possíveis
+Dialog.create("Valores para cortar série Z e remover background");
+
+Dialog.addMessage("Quais serão as fatias que serão usadas na série Z final?");
+Dialog.addNumber("Primeira fatia:", 1);
+Dialog.addNumber("última fatia:", 12);
+Dialog.addMessage("Rolling window a ser usada:");
+Dialog.addNumber("Valor para DAPI:", 30);
+Dialog.addNumber("Valor para BRDU:", 50);
+Dialog.addNumber("Valor para DCX:", 30);
+
+Dialog.show();
+n_inicial = Dialog.getNumber();
+n_final = Dialog.getNumber();
+rolling_dapi = Dialog.getNumber();
+rolling_brdu = Dialog.getNumber();
+rolling_dcx = Dialog.getNumber();
 
 //contents = getFileList( dir );
 //list = split(contents, "\n");
 
-	list = getFileList(dir);
-	list = Array.sort(list);
-	for (i = 0; i < list.length; i++) {
-		if(File.isDirectory(dir + File.separator + list[i]))
-			processFolder(dir + File.separator + list[i]);
-		if(endsWith(list[i], ".zvi"))
-		current_dir = dir;
-			print(dir + list[i]);
+	var list_file_names = getFileList(dir); //Me dá uma lista com o nome dos arquivos no diretório selecionado
+	list_file_names = Array.sort(list_file_names);
+	for (i = 0; i < list_file_names.length; i++) { //Loop para selecionar apenas imagens .zvi
+		if(File.isDirectory(dir + File.separator + list_file_names[i]))
+			exit("Você precisa selecionar dentro da pasta onde estão os arquivos");
+		if(endsWith(list_file_names[i], ".zvi"))
+			print(dir + list_file_names[i]);
 	}
 
+Array.sort(list_file_names);
+print("list length is " + list_file_names.length)
+qtd = list_file_names.length
+
+//Loop que faz o processamento das imagens
 Array.sort(list);
 print("list length is " + list.length)
 qtd = list.length
