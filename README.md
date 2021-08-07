@@ -1,6 +1,6 @@
 # Lab_Projects_as_IC
 
-Códigos criados para agilizar alguma tarefa do Lab
+Code created to speed up some task in the lab
 
 -------------------------------------------------------------------------------------
 
