@@ -1,6 +1,7 @@
 print("\\Clear");
 run("Close All");
-//setOption("ExpandableArrays", true);
+setOption("ExpandableArrays", true);
+
 dir = getDirectory( "Onde estão as fotos?" );
 output = getDirectory( "Onde você quer guardá-las?" );
 
@@ -14,41 +15,38 @@ Dialog.create("Valores para cortar série Z e remover background");
 Dialog.addMessage("Quais serão as fatias você quer remover do início e fim da série Z?");
 Dialog.addNumber("Início:", 2);
 Dialog.addNumber("Final:", 2);
-Dialog.addMessage("Rolling window a ser usada:");
-Dialog.addNumber("Valor para DAPI:", 100);
-Dialog.addNumber("Valor para BDNF:", 100);
+Dialog.addMessage("Rolling window a ser usada:\nMínimo = 0");
+Dialog.addNumber("Valor para DAPI:", 0);
+Dialog.addNumber("Valor para BDNF:", 0);
 
 Dialog.show();
 
-var n_inicial = Dialog.getNumber();
-var n_final = Dialog.getNumber();
-rolling_dapi = Dialog.getNumber();
-rolling_bdnf = Dialog.getNumber();
-
-//contents = getFileList( dir );
-//list = split(contents, "\n");
+var n_iniciali = Dialog.getNumber();
+var n_finali = Dialog.getNumber();
+var rolling_dapi = Dialog.getNumber();
+var rolling_bdnf = Dialog.getNumber();
 
 var foto_atual = 1;
 var list_file_names = getFileList(dir); //Me dá uma lista com o nome dos arquivos no diretório selecionado
-	list_file_names = Array.sort(list_file_names); //Mas não discrimina entre 10x e 40x
+list_file_names = Array.sort(list_file_names); //Mas não discrimina entre 10x e 40x
 
 debug_file_list = newArray //Array com o path apenas das fotos de 40x
 z = 0;
 for (i = 0; i < list_file_names.length; i++) { //Loop para selecionar apenas imagens .zvi
-    if(File.isDirectory(dir + File.separator + list_file_names[i])){
-		exit("Você precisa selecionar dentro da pasta onde estão os arquivos");
-    }
-	if((endsWith(list_file_names[i], ".zvi")) && (indexOf(list_file_names[i], "40x") > 0)){
-		debug_file_list[z] = dir + list_file_names[i];
-        print(dir + list_file_names[i]);
-    }else{
+  if(File.isDirectory(dir + File.separator + list_file_names[i])){
+  exit("Você precisa selecionar dentro da pasta onde estão os arquivos");
+  }
+  if((endsWith(list_file_names[i], ".zvi")) && (indexOf(list_file_names[i], "40x") > 0)){
+    path = dir + list_file_names[i];
+    debug_file_list[z] = path;
+    print(dir + list_file_names[i]);
+  }else{
     continue;
-        //exit("Não é possível processar arquivos que não são .zvi ou não são um Z_Stack\nComo por exemplo: " dir+list_file_names[i]);
     }
     z++;
 }
 Array.deleteValue(debug_file_list, "undefined") //Remove valores undefined
-//Array.sort(list_file_names);
+
 Array.sort(debug_file_list);
 qtd = debug_file_list.length;
 
@@ -64,15 +62,15 @@ for ( i=0; i < qtd; i+=2) {
     selectWindow(tmp);
     if(p == i){
         stack_size = nSlices;
-        runtime_n_inicial = stack_size + 1 - (stack_size - n_inicial);
-        runtime_n_final = stack_size - n_final;
-        print("Vou começar na fatia "+runtime_n_inicial+"\ne terminar na fatia "+runtime_n_final+"\ne a foto tem "+stack_size +" fotos");
+        n_inicial = stack_size + 1 - (stack_size - n_iniciali);
+        n_final = stack_size - n_finali;
+        print("Vou começar na fatia "+n_inicial+"\ne terminar na fatia "+n_final+"\ne a foto tem "+stack_size +" fotos");
     }else if (stack_size == 1){
-		exit("Atualmente o programa não consegue lidar\ncom fotos que não possuem uma série Z\nComo a foto "+current_image); 
+    exit("Atualmente o programa não consegue lidar\ncom fotos que não possuem uma série Z\nComo a foto "+current_image);
     }
   }
-  
-    
+
+
   run("Show All");
   list_open_filters = getList("image.titles"); //Faz um array com o nome das janelas abertas
 
@@ -88,15 +86,8 @@ for ( i=0; i < qtd; i+=2) {
   list_open_filters = getList("image.titles"); //Refaz o array porque a operação de comprimir a série Z muda o nome da imagem
 
   //Retira o background
-  //Aqui apenas o filtro do BRDU não é com um rolling window de 30px
-
   for (k=0; k<list_open_filters.length; k++) {
-    if (indexOf(list_open_filters[k], "DCX") >= 0) {
-      selectWindow(list_open_filters[k]);
-      run("Subtract Background...", "rolling="+rolling_dcx);
-      setOption("ScaleConversions", true);
-      run("8-bit");
-      }else if (indexOf(list_open_filters[k], "DAPI") >= 0) {
+    if (indexOf(list_open_filters[k], "DAPI") >= 0) {
       selectWindow(list_open_filters[k]);
       run("Subtract Background...", "rolling="+rolling_dapi);
       setOption("ScaleConversions", true);
@@ -111,12 +102,12 @@ for ( i=0; i < qtd; i+=2) {
 
   //Faz o composite com as três imagens sem background
   Array.sort(list_open_filters);
-  // Eplanation for the brackets: 
-  // If your file names (i.e. the ‘values’ of the parameters c1, c2, etc.) contain spaces, 
+  // Eplanation for the brackets:
+  // If your file names (i.e. the ‘values’ of the parameters c1, c2, etc.) contain spaces,
   // you have to enclose them in square brackets []
   run("Merge Channels...", "c2=["+ list_open_filters[0] + "] c3=[" + list_open_filters[1] + "] create keep");
 
-  //Seleciona todas as imagaens e salva o composite como um .TIF para análise
+  //Seleciona todas as imagens e salva o composite como um .PNG para análise
   run("Show All");
   list_open_filters = getList("image.titles");
 
