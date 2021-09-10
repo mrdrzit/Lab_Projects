@@ -1,17 +1,17 @@
 print("\\Clear");
-dir = getDirectory( "Onde est√£o as fotos?" );
-output = getDirectory( "Onde voc√™ quer guard√°-las?" );
+dir = getDirectory( "Onde est„o as fotos?" );
+output = getDirectory( "Onde vocÍ quer guard·-las?" );
 
-dir = replace(dir, "\\", "/"); // Conserta o nome do diret√≥rio para windows, colocando '/'
+dir = replace(dir, "\\", "/"); // Conserta o nome do diretÛrio para windows, colocando '/'
 output = replace(output, "\\", "/");
 
-//Crio uma janela para o usu√°rio indicar quais valores ser√£o usados no processamento
-//TODO: Modular com base nos filtros poss√≠veis
-Dialog.create("Valores para cortar s√©rie Z e remover background");
+//Crio uma janela para o usu·rio indicar quais valores ser„o usados no processamento
+//TODO: Modular com base nos filtros possÌveis
+Dialog.create("Valores para cortar sÈrie Z e remover background");
 
-Dialog.addMessage("Quais ser√£o as fatias que ser√£o usadas na s√©rie Z final?");
+Dialog.addMessage("Quais ser„o as fatias que ser„o usadas na sÈrie Z final?");
 Dialog.addNumber("Primeira fatia:", 1);
-Dialog.addNumber("√∫ltima fatia:", 12);
+Dialog.addNumber("˙ltima fatia:", 12);
 Dialog.addMessage("Rolling window a ser usada:");
 Dialog.addNumber("Valor para DAPI:", 30);
 Dialog.addNumber("Valor para BRDU:", 50);
@@ -27,11 +27,11 @@ rolling_dcx = Dialog.getNumber();
 //contents = getFileList( dir );
 //list = split(contents, "\n");
 
-	var list_file_names = getFileList(dir); //Me d√° uma lista com o nome dos arquivos no diret√≥rio selecionado
+	var list_file_names = getFileList(dir); //Me d· uma lista com o nome dos arquivos no diretÛrio selecionado
 	list_file_names = Array.sort(list_file_names);
 	for (i = 0; i < list_file_names.length; i++) { //Loop para selecionar apenas imagens .zvi
 		if(File.isDirectory(dir + File.separator + list_file_names[i]))
-			exit("Voc√™ precisa selecionar dentro da pasta onde est√£o os arquivos");
+			exit("VocÍ precisa selecionar dentro da pasta onde est„o os arquivos");
 		if(endsWith(list_file_names[i], ".zvi"))
 			print(dir + list_file_names[i]);
 	}
@@ -46,14 +46,14 @@ for ( i=0; i < qtd; i++ ) {
 	atual = i + 1;
 	
 	
-	print("Estou processando a foto " + list_file_names[i] + " para voc√™");
+	print("Estou processando a foto " + list_file_names[i] + " para vocÍ");
 	current_image = dir+list_file_names[i];
 	print(current_image);
     open(current_image);
     run("Show All");
 	list_open_filters = getList("image.titles"); //Faz um array com o nome das janelas abertas
 	
-	//Faz a compress√£o da s√©rie Z retirando as primeiras e √∫ltimas imagens pedidas pelo usu√°rio
+	//Faz a compress„o da sÈrie Z retirando as primeiras e ˙ltimas imagens pedidas pelo usu·rio
 	for (j=0; j<list_open_filters.length; j++) {
 		selectWindow(list_open_filters[j]);
 		run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
@@ -61,11 +61,11 @@ for ( i=0; i < qtd; i++ ) {
 		close();
 	}
 	
-	run("Show All"); //Isso sempre vem antes pra ter certeza que todas as imagens que foram abertas podem ser selecionadas (a.k.a.: n√£o est√£o minimizadas)
-	list_open_filters = getList("image.titles"); //Refaz o array porque a opera√ß√£o de comprimir a s√©rie Z muda o nome da imagem
+	run("Show All"); //Isso sempre vem antes pra ter certeza que todas as imagens que foram abertas podem ser selecionadas (a.k.a.: n„o est„o minimizadas)
+	list_open_filters = getList("image.titles"); //Refaz o array porque a operaÁ„o de comprimir a sÈrie Z muda o nome da imagem
 	
 	//Retira o background
-	//Aqui apenas o filtro do BRDU n√£o √© com um rolling window de 30px
+	//Aqui apenas o filtro do BRDU n„o È com um rolling window de 30px
 	
 	for (k=0; k<list_open_filters.length; k++) {
 		if (indexOf(list_open_filters[k], "C=0") >= 0) {
@@ -86,11 +86,11 @@ for ( i=0; i < qtd; i++ ) {
 		}
 	}
 	
-	//Faz o composite com as tr√™s imagens sem background
+	//Faz o composite com as trÍs imagens sem background
 	Array.sort(list_open_filters);
 	run("Merge Channels...", "c2=["+ list_open_filters[2] + "] c3=[" + list_open_filters[0] + "] c6=[" + list_open_filters[1] + "] create keep");
 	
-	//Seleciona todas as imagaens e salva o composite como um .TIF para an√°lise
+	//Seleciona todas as imagaens e salva o composite como um .TIF para an·lise
 	run("Show All");
 	list_open_filters = getList("image.titles");
 	

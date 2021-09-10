@@ -26,13 +26,13 @@ for ( i=0; i < qtd; i++ ) {
 		showText("The robot overlods will take the overworld..");
 	}
 	
-	print("Estou processando a foto " + (i+1) + " para vocÃª UwU");
+	print("Estou processando a foto " + (i+1) + " para você UwU");
     open("R:/Analise das fotos do bulbo/Animal 2 cx 58/F12/animal2cx58F12BO40x" + atual + ".zvi");
 
     run("Show All");
 	list = getList("image.titles"); 
 	
-	//Faz a compressÃ£o da sÃ©rie Z retirando as 2 primeiras e duas Ãºltimas imagens
+	//Faz a compressão da série Z retirando as 2 primeiras e duas últimas imagens
 	for (j=0; j<list.length; j++) {
 		selectWindow(list[j]);
 		run("Z Project...", "start=2 stop=8 projection=[Max Intensity]");
@@ -44,7 +44,7 @@ for ( i=0; i < qtd; i++ ) {
 	list = getList("image.titles");
 	
 	//Retira o background
-	//Aqui apenas o filtro do BRDU nÃ£o Ã© com um rolling window de 30px
+	//Aqui apenas o filtro do BRDU não é com um rolling window de 30px
 	
 	for (k=0; k<list.length; k++) {
 		if (indexOf(list[k], "C=0") >= 0) {
@@ -65,11 +65,11 @@ for ( i=0; i < qtd; i++ ) {
 		}
 	}
 	
-	//Faz o composite com as trÃªs imagens sem background
+	//Faz o composite com as três imagens sem background
 	Array.sort(list);
 	run("Merge Channels...", "c2=["+ list[2] + "] c3=[" + list[0] + "] c6=[" + list[1] + "] create keep");
 	
-	//Seleciona todas as imagaens e salva o composite como um .TIF para anÃ¡lise
+	//Seleciona todas as imagaens e salva o composite como um .TIF para análise
 	run("Show All");
 	list = getList("image.titles");
 	
