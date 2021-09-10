@@ -16,15 +16,21 @@ Dialog.addMessage("Quais serão as fatias você quer remover do início e fim da sé
 Dialog.addNumber("Início:", 2);
 Dialog.addNumber("Final:", 2);
 Dialog.addMessage("Rolling window a ser usada:\nMínimo = 0");
-Dialog.addNumber("Valor para DAPI:", 0);
-Dialog.addNumber("Valor para BDNF:", 0);
+Dialog.addNumber("Valor para DAPI:", 50);
+Dialog.addToSameRow();
+Dialog.addCheckbox("Remover background do DAPI?", true);
+Dialog.addNumber("Valor para BDNF:", 50);
+Dialog.addToSameRow();
+Dialog.addCheckbox("Remover background do BDNF?", true);
 
 Dialog.show();
 
 var n_iniciali = Dialog.getNumber();
 var n_finali = Dialog.getNumber();
 var rolling_dapi = Dialog.getNumber();
+var remove_dapi = Dialog.getCheckbox();
 var rolling_bdnf = Dialog.getNumber();
+var remove_bdnf = Dialog.getCheckbox();
 
 var foto_atual = 1;
 var list_file_names = getFileList(dir); //Me dá uma lista com o nome dos arquivos no diretório selecionado
@@ -42,8 +48,8 @@ for (i = 0; i < list_file_names.length; i++) { //Loop para selecionar apenas ima
     print(dir + list_file_names[i]);
   }else{
     continue;
-    }
-    z++;
+  }
+  z++;
 }
 Array.deleteValue(debug_file_list, "undefined") //Remove valores undefined
 
@@ -61,12 +67,12 @@ for ( i=0; i < qtd; i+=2) {
     tmp = getInfo("image.title");
     selectWindow(tmp);
     if(p == i){
-        stack_size = nSlices;
-        n_inicial = stack_size + 1 - (stack_size - n_iniciali);
-        n_final = stack_size - n_finali;
-        print("Vou começar na fatia "+n_inicial+"\ne terminar na fatia "+n_final+"\ne a foto tem "+stack_size +" fotos");
+      stack_size = nSlices;
+      n_inicial = stack_size + 1 - (stack_size - n_iniciali);
+      n_final = stack_size - n_finali;
+      print("Vou começar na fatia "+n_inicial+"\ne terminar na fatia "+n_final+"\ne a foto tem "+stack_size +" fotos");
     }else if (stack_size == 1){
-    exit("Atualmente o programa não consegue lidar\ncom fotos que não possuem uma série Z\nComo a foto "+current_image);
+      exit("Atualmente o programa não consegue lidar\ncom fotos que não possuem uma série Z\nComo a foto "+current_image);
     }
   }
 
@@ -87,12 +93,12 @@ for ( i=0; i < qtd; i+=2) {
 
   //Retira o background
   for (k=0; k<list_open_filters.length; k++) {
-    if (indexOf(list_open_filters[k], "DAPI") >= 0) {
+    if ((indexOf(list_open_filters[k], "DAPI") >= 0) && remove_dapi) {
       selectWindow(list_open_filters[k]);
       run("Subtract Background...", "rolling="+rolling_dapi);
       setOption("ScaleConversions", true);
       run("8-bit");
-      }else if (indexOf(list_open_filters[k], "BDNF") >= 0) {
+      }else if ((indexOf(list_open_filters[k], "BDNF") >= 0) && remove_bdnf) {
       selectWindow(list_open_filters[k]);
       run("Subtract Background...", "rolling="+rolling_bdnf);
       setOption("ScaleConversions", true);

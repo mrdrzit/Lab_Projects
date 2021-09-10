@@ -25,7 +25,7 @@ rolling_brdu = Dialog.getNumber();
 rolling_dcx = Dialog.getNumber();
 
 var list_file_names = getList("image.titles"); //Me dá uma lista com o nome dos arquivos no diretório selecionado
-	list_file_names = Array.sort(list_file_names);
+  list_file_names = Array.sort(list_file_names);
 
 print("Vou processar " + list_file_names.length + " fotos/filtros")
 qtd = list_file_names.length;
@@ -40,10 +40,10 @@ list_open_filters = getList("image.titles"); //Faz um array com o nome das janel
 
 //Faz a compressão da série Z retirando as primeiras e últimas imagens pedidas pelo usuário
 for (j=0; j<list_open_filters.length; j++) {
-	selectWindow(list_open_filters[j]);
-	run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
-	selectWindow(list_open_filters[j]);
-	close();
+  selectWindow(list_open_filters[j]);
+  run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
+  selectWindow(list_open_filters[j]);
+  close();
 }
 
 run("Show All"); //Isso sempre vem antes pra ter certeza que todas as imagens que foram abertas podem ser selecionadas (a.k.a.: não estão minimizadas)
@@ -53,22 +53,22 @@ list_open_filters = getList("image.titles"); //Refaz o array porque a operação d
 //Aqui apenas o filtro do BRDU não é com um rolling window de 30px
 
 for (k=0; k<list_open_filters.length; k++) {
-	if (indexOf(list_open_filters[k], "C=0") >= 0) {
-		selectWindow(list_open_filters[k]);
-		run("Subtract Background...", "rolling="+rolling_dcx);
-		setOption("ScaleConversions", true);
-		run("8-bit");
-	}else if (indexOf(list_open_filters[k], "C=1") >= 0) {
-		selectWindow(list_open_filters[k]);
-		run("Subtract Background...", "rolling="+rolling_dapi);
-		setOption("ScaleConversions", true);
-		run("8-bit");
-	}else if (indexOf(list_open_filters[k], "C=2") >= 0) {
-		selectWindow(list_open_filters[k]);
-		run("Subtract Background...", "rolling="+rolling_brdu);
-		setOption("ScaleConversions", true);
-		run("8-bit");
-	}
+  if (indexOf(list_open_filters[k], "C=0") >= 0) {
+    selectWindow(list_open_filters[k]);
+    run("Subtract Background...", "rolling="+rolling_dcx);
+    setOption("ScaleConversions", true);
+    run("8-bit");
+  }else if (indexOf(list_open_filters[k], "C=1") >= 0) {
+    selectWindow(list_open_filters[k]);
+    run("Subtract Background...", "rolling="+rolling_dapi);
+    setOption("ScaleConversions", true);
+    run("8-bit");
+  }else if (indexOf(list_open_filters[k], "C=2") >= 0) {
+    selectWindow(list_open_filters[k]);
+    run("Subtract Background...", "rolling="+rolling_brdu);
+    setOption("ScaleConversions", true);
+    run("8-bit");
+  }
 }
 
 //Faz o composite com as três imagens sem background
@@ -89,11 +89,11 @@ list = getList("image.titles");
 Array.sort(list);
 
 for (p=0; p<list.length; p++) {
-	if (p==0){
-		continue;
-	}else{
-		close(list[p]);
-	}
+  if (p==0){
+    continue;
+  }else{
+    close(list[p]);
+  }
 }
 run("Close All");
 

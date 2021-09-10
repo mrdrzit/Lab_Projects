@@ -20,7 +20,7 @@ n_finali = Dialog.getNumber();
 
 var foto_atual = 1;
 var list_file_names = getFileList(dir); //Me dá uma lista com o nome dos arquivos no diretório selecionado
-	list_file_names = Array.sort(list_file_names);
+  list_file_names = Array.sort(list_file_names);
 
 Array.sort(list_file_names);
 qtd = list_file_names.length;
@@ -32,7 +32,7 @@ for ( i=0; i < qtd; i++) {
   }else if (indexOf(list_file_names[i], "10x") >= 0){
     continue;
   }
-  
+
   current_image = dir+list_file_names[i];
   open(current_image);
   imageid = getImageID();
@@ -40,9 +40,9 @@ for ( i=0; i < qtd; i++) {
   if (nSlices() > 1) {
     stack_size = nSlices();
   }else {
-  exit("Atualmente o programa não consegue lidar\ncom fotos que não possuem uma série Z\nComo a foto "+current_image) 
+  exit("Atualmente o programa não consegue lidar\ncom fotos que não possuem uma série Z\nComo a foto "+current_image)
   }
-  
+
   showProgress(i, qtd);
   print("Estou processando a foto "+list_file_names[i]);
 
