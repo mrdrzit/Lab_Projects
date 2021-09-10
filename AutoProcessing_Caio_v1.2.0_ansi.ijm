@@ -45,7 +45,6 @@ for (i = 0; i < list_file_names.length; i++) { //Loop para selecionar apenas ima
   if((endsWith(list_file_names[i], ".zvi")) && (indexOf(list_file_names[i], "40x") > 0)){
     path = dir + list_file_names[i];
     debug_file_list[z] = path;
-    print(dir + list_file_names[i]);
   }else{
     continue;
   }
