@@ -89,16 +89,33 @@ for ( i=0; i < qtd; i++ ) {
       run("Subtract Background...", "rolling="+rolling_dcx);
       setOption("ScaleConversions", true);
       run("8-bit");
-    }else if ((indexOf(list_open_filters[k], "C=1") >= 0) && remove_dapi) {
+    }else if ((indexOf(list_open_filters[k], "C=0") >= 0) && !remove_dcx){
+      selectWindow(list_open_filters[k]);
+      setOption("ScaleConversions", true);
+      run("8-bit");
+      continue;
+    }
+    else if ((indexOf(list_open_filters[k], "C=1") >= 0) && remove_dapi) {
       selectWindow(list_open_filters[k]);
       run("Subtract Background...", "rolling="+rolling_dapi);
       setOption("ScaleConversions", true);
       run("8-bit");
-    }else if ((indexOf(list_open_filters[k], "C=2") >= 0) && remove_brdu) {
+    }else if ((indexOf(list_open_filters[k], "C=1") >= 0) && !remove_dapi){
+      selectWindow(list_open_filters[k]);
+      setOption("ScaleConversions", true);
+      run("8-bit");
+      continue;
+    }
+    else if ((indexOf(list_open_filters[k], "C=2") >= 0) && remove_brdu) {
       selectWindow(list_open_filters[k]);
       run("Subtract Background...", "rolling="+rolling_brdu);
       setOption("ScaleConversions", true);
       run("8-bit");
+    }else if ((indexOf(list_open_filters[k], "C=2") >= 0) && !remove_brdu){
+      selectWindow(list_open_filters[k]);
+      setOption("ScaleConversions", true);
+      run("8-bit");
+      continue;
     }
   }
 
