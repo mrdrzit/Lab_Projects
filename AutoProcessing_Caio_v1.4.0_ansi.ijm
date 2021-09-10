@@ -97,11 +97,22 @@ for ( i=0; i < qtd; i+=2) {
       run("Subtract Background...", "rolling="+rolling_dapi);
       setOption("ScaleConversions", true);
       run("8-bit");
-      }else if ((indexOf(list_open_filters[k], "BDNF") >= 0) && remove_bdnf) {
+    }else if ((indexOf(list_open_filters[k], "DAPI") >= 0) && !remove_dapi){
+      selectWindow(list_open_filters[k]);
+      setOption("ScaleConversions", true);
+      run("8-bit");
+      continue;
+    }
+    else if ((indexOf(list_open_filters[k], "BDNF") >= 0) && remove_bdnf) {
       selectWindow(list_open_filters[k]);
       run("Subtract Background...", "rolling="+rolling_bdnf);
       setOption("ScaleConversions", true);
       run("8-bit");
+    }else if ((indexOf(list_open_filters[k], "BDNF") >= 0) && !remove_bdnf){
+      selectWindow(list_open_filters[k]);
+      setOption("ScaleConversions", true);
+      run("8-bit");
+      continue;
     }
   }
 
