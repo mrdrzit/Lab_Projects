@@ -15,7 +15,6 @@ Autoprocessing ChangeLog - 10/09/2021
  - Added more comments
  - Made a condition for the number of photos inside the Z-stack
  - Now uses nSlices instead of getSliceNumber()
- - Teste
 
 TODO
 
