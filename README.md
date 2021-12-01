@@ -20,6 +20,7 @@ TODO
 
  - Make the script more modular based on the list of available filters in the lab
  - Allow the user to type the file name he so desires
+ - Create a unified script for every kind of image processing that envolves theses steps
 
 -------------------------------------------------------------------------------------
 
