@@ -29,7 +29,11 @@ var rolling_nestin = Dialog.getNumber();
 var remove_nestin = Dialog.getCheckbox();
 
 list_file_names = getFileList(dir); //Gives a list with the filenames in the selected directory
+<<<<<<< HEAD
 //TODO: #2 What if the folder contains more folders? This will mess up the image counting
+=======
+//TODO: What if the folder contains more folders? This will mess up the image counting
+>>>>>>> ce1e1fd0e6cc3554355763aeb64cbe605a401014
 var list_file_names = Array.sort(list_file_names);
 
 for (i = 0; i < list_file_names.length; i++) { //Loop to select only .zvi images
