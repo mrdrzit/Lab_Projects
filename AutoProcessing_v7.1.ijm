@@ -51,9 +51,9 @@ for (i = 0; i < list_file_names.length; i++) { //Loop to select only .zvi images
 }
 
 Array.sort(list_file_names);
-qtd = list_file_names.length
+qtd = list_file_names.length //The number of times that i'll iterate the loop
 
-//Loop que faz o processamento das imagens
+//Loop that actually processess the images
 for ( i=0; i < qtd; i++ ) {
   showProgress(i, qtd);
   atual = i + 1;
@@ -84,6 +84,7 @@ for ( i=0; i < qtd; i++ ) {
   list_open_filters = getList("image.titles"); //Re-create the array because the compression operation on the z-stack changes the imagename
 
   //Removes the background
+  //TODO: Modulate based on the control group's background (image histogram)
   for (k=0; k<list_open_filters.length; k++) {
     if ((indexOf(list_open_filters[k], "C=0") >= 0) && remove_dcx) {
       selectWindow(list_open_filters[k]);
