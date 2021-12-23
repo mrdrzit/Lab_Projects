@@ -58,7 +58,7 @@ for ( i=0; i < qtd; i++ ) {
   showProgress(i, qtd);
   atual = i + 1;
 
-  print("I'm processing the photo " + list_file_names[i] + " for you");
+  print("\nI'm processing the photo " + list_file_names[i] + " for you");
   current_image = dir+list_file_names[i];
   open(current_image);
   run("Show All");
@@ -73,8 +73,9 @@ for ( i=0; i < qtd; i++ ) {
     }
     n_inicial = stack_size + 1 - (stack_size - n_iniciali);
     n_final = stack_size - n_finali;
-    print("I'll start at the slice "+n_inicial+"\nand stop at the slice "+n_final+"\nand the photo have "+stack_size +" slices");
-    
+    if (j==0){
+      print("I'll start at the slice "+n_inicial+"\nand stop at the slice "+n_final+"\nand the photo have "+stack_size +" slices");
+    }
     run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
     selectWindow(list_open_filters[j]);
     close();
@@ -85,6 +86,7 @@ for ( i=0; i < qtd; i++ ) {
 
   //Removes the background
   //TODO: Modulate based on the control group's background (image histogram)
+  if(removebackground){
   for (k=0; k<list_open_filters.length; k++) {
     if ((indexOf(list_open_filters[k], "C=0") >= 0) && remove_dcx) {
       selectWindow(list_open_filters[k]);
