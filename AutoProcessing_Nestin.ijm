@@ -16,7 +16,7 @@ Dialog.create("Values to cut the z-stack and remove the background");
 Dialog.addMessage("What will be the slices that you want to remove at the start and end of the z-stack?");
 Dialog.addNumber("Start:", 2);
 Dialog.addNumber("End:", 2);
-Dialog.addMessage("Rolling to be used:\nminimum = 0");
+Dialog.addMessage("Rolling window to be used:\nminimum = 0");
 Dialog.addNumber("Value for Nestin:", 50);
 Dialog.addToSameRow();
 Dialog.addCheckbox("Remove the background of the filter for Nestin?", true);
