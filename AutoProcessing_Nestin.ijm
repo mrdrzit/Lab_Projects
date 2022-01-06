@@ -28,9 +28,14 @@ var n_finali = Dialog.getNumber();
 var rolling_nestin = Dialog.getNumber();
 var remove_nestin = Dialog.getCheckbox();
 
-list_file_names = getFileList(dir); //Gives a list with the filenames in the selected directory
+var list_file_names = getFileList(dir); //Gives a list with the filenames in the selected directory
+for (i = 0; i < list_file_names.length; i++){
+    if (endsWith(list_file_names[i], "/")){
+    exit("Please remove all folders inside where the photos are stored")
+  }
+}
 //TODO: #2 What if the folder contains more folders? This will mess up the image counting
-var list_file_names = Array.sort(list_file_names);
+list_file_names = Array.sort(list_file_names);
 
 for (i = 0; i < list_file_names.length; i++) { //Loop to select only .zvi images
   if(File.isDirectory(dir + File.separator + list_file_names[i])){
