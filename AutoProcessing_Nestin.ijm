@@ -17,7 +17,7 @@ Dialog.addMessage("What will be the slices that you want to remove at the start 
 Dialog.addNumber("Start:", 2);
 Dialog.addNumber("End:", 2);
 Dialog.addMessage("Rolling window to be used:\nminimum = 0");
-Dialog.addNumber("Value for Nestin:", 50);
+Dialog.addNumber("Value for Nestin:", 30);
 Dialog.addToSameRow();
 Dialog.addCheckbox("Remove the background of the filter for Nestin?", true);
 
@@ -29,22 +29,19 @@ var rolling_nestin = Dialog.getNumber();
 var remove_nestin = Dialog.getCheckbox();
 
 var list_file_names = getFileList(dir); //Gives a list with the filenames in the selected directory
-for (i = 0; i < list_file_names.length; i++){
-    if (endsWith(list_file_names[i], "/")){
+for (i = 0; i < list_file_names.length; i++){ //Loop to select only .zvi images and check for directories inside of the folder
+  if (endsWith(list_file_names[i], "/")){
     exit("Please remove all folders inside from wherever the photos are stored")
+  }if(!(endsWith(list_file_names[i], ".zvi"))){
+    exit("The files need to be in the .zvi format");
   }
 }
 list_file_names = Array.sort(list_file_names);
 
-for (i = 0; i < list_file_names.length; i++) { //Loop to select only .zvi images
-  if(File.isDirectory(dir + File.separator + list_file_names[i])){
-    exit("You need to select inside of the folder containing the images");
-  }
+for (i = 0; i < list_file_names.length; i++) { 
   if(!(endsWith(list_file_names[i], ".zvi"))){
     exit("The files need to be in the .zvi format");
   }
-  if(!(endsWith(list_file_names[i], "/"))){
-    exit("There can be only the images that you want to process inside the folder");
 }
 
 Array.sort(list_file_names);
