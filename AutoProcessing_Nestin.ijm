@@ -74,9 +74,10 @@ for (i = 0; i < qtd; i++){
     allExceptMax = getList("image.titles");
     for (i = 0; i < allExceptMax.length; i++){
       if (!(startsWith(allExceptMax[i], "MAX"))){
-        selectWindow(allExceptMax[i]);
-        close();
+        close(allExceptMax[i]);
       }
     }
+
+    
   }
 }
