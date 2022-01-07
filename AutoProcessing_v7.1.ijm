@@ -85,7 +85,7 @@ for ( i=0; i < qtd; i++ ) {
   list_open_filters = getList("image.titles"); //Re-create the array because the compression operation on the z-stack changes the imagename
 
   //Removes the background
-  //TODO: Modulate based on the control group's background (image histogram)
+  //TODO: #4 Modulate based on the control group's background (image histogram)
   if(removebackground){
   for (k=0; k<list_open_filters.length; k++) {
     if ((indexOf(list_open_filters[k], "C=0") >= 0) && remove_dcx) {
