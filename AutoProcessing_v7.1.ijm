@@ -62,7 +62,7 @@ for ( i=0; i < qtd; i++ ) {
   current_image = dir+list_file_names[i];
   open(current_image);
   run("Show All");
-  list_open_filters = getList("image.titles"); //Faz um array com o name das janelas abertas Creates an array with the names of the currently open windows
+  list_open_filters = getList("image.titles"); //Creates an array containing the opened windows's names 
 
   //Runs a z-stack compression removing the selected range of photos at the start and end of the stack 
   for (j=0; j<list_open_filters.length; j++) {

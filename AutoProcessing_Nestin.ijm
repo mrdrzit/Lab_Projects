@@ -46,3 +46,37 @@ for (i = 0; i < list_file_names.length; i++) {
 
 Array.sort(list_file_names);
 qtd = list_file_names.length //The number of times that i'll iterate the loop
+
+for (i = 0; i < qtd; i++){
+  showProgress(i, qtd);
+  atual = i + 1;
+  print("\nI'm processing the photo " + list_file_names[i] + " for you");
+  current_image = dir+list_file_names[i];
+  open(current_image);
+  run("Show All");
+  list_open_filters = getList("image.titles"); //Creates an array containing the opened windows's names
+
+  //Runs a z-stack compression removing the selected range of photos at the start and end of the stack 
+  for (j=0; j<list_open_filters.length; j++) {
+    selectWindow(list_open_filters[j]);
+    stack_size = nSlices;
+    if (stack_size == 1){
+      exit("Currently the program cannot process\nphotos that aren't a z-stack\nLike the photo "+current_image);
+    }
+    n_inicial = stack_size + 1 - (stack_size - n_iniciali);
+    n_final = stack_size - n_finali;
+    if (j==0){
+      print("I'll start at the slice "+n_inicial+"\nand stop at the slice "+n_final+"\nand the photo have "+stack_size +" slices");
+    }
+    run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
+    selectWindow(list_open_filters[j]);
+
+    allExceptMax = getList("image.titles");
+    for (i = 0; i < allExceptMax.length; i++){
+      if (!(startsWith(allExceptMax[i], "MAX"))){
+        selectWindow(allExceptMax[i]);
+        close();
+      }
+    }
+  }
+}
