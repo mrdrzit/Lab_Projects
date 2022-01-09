@@ -75,6 +75,10 @@ for (i = 0; i < qtd; i++){
     for (i = 0; i < allExceptMax.length; i++){
       if (!(startsWith(allExceptMax[i], "MAX"))){
         close(allExceptMax[i]);
+      }else {
+        setOption("ScaleConversions", true);
+        run("8-bit");
+        close(allExceptMax[i]);
       }
     }
 
