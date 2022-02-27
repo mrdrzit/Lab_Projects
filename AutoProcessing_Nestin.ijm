@@ -71,6 +71,8 @@ for (i = 0; i < qtd; i++){
     run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
     selectWindow(list_open_filters[j]);
 
+    //Entraria o corte
+
     allExceptMax = getList("image.titles");
     for (i = 0; i < allExceptMax.length; i++){
       if (!(startsWith(allExceptMax[i], "MAX"))){
