@@ -1,7 +1,8 @@
-// command to draw a line grid on an image in a non-destructive overlay.
+// command to draw a line grid on an image in a non-destructive overlay and the cut the image into pieces.
+//getSelectionBounds(x, y, width, height);
 
-requires("1.43j");
-  p = 700;
+requires("1.53d");
+dir = "C:\\Users\\uzuna\\Desktop\\0teste\\nao processadas\\chop chop"
   color = "red";
   nLines = 4;
   if (nImages==0) {
@@ -13,31 +14,30 @@ requires("1.43j");
   height = getHeight;
   tileWidth = width/(nLines+1);
   tileHeight = tileWidth;
-  xoff=tileWidth;
-  lamp=1;
-  while (true && xoff<width) { // draw vertical lines
-    if (lamp == 1){
-      makeLine(xoff/2, 0, xoff/2, height);
-      run("Add Selection...", "stroke="+color);
-        xoff += tileWidth/2;
-        lamp +=1;
-        continue
+  xoff = yoff = tileWidth;
+  makeRectangle(0, 0, tileWidth, tileHeight);
+  Overlay.addSelection;
+  currentX = currentY = 0;
+
+  while (true) { // Chop the images into pieces
+    Overlay.cropAndSave(dir, "tif");
+    Overlay.getBounds(0, currentX, currentY, currentWidth, currentHeight);
+    Overlay.remove;
+    makeRectangle(currentX + xoff, currentY, tileWidth, tileHeight);
+    Overlay.addSelection;
+    if (currentX + xoff >= width){
+      if((currentX + xoff + 30) > width && (currentY + yoff + 30) > height){
+        break
+      }
+      Overlay.remove;
+      currentX = 0;
+      currentY += yoff;
+      makeRectangle(currentX, currentY, tileWidth, tileHeight);
+      Overlay.addSelection;
     }
-    makeLine(xoff, 0, xoff, height);
-      run("Add Selection...", "stroke="+color);
-        xoff += tileWidth;
-   }
-  yoff=tileHeight;
-  while (true && yoff<height) { // draw horizonal lines
-    if (lamp == 1){
-      makeLine(0, yoff/2, width, yoff/2);
-      run("Add Selection...", "stroke="+color);
-        yoff += tileHeight/2;
-        lamp +=1;
-        continue
-    }
-    makeLine(0, yoff, width, yoff);
-    run("Add Selection...", "stroke="+color);
-      yoff += tileHeight;
-   }
+  }
   run("Select None");
+  
+
+
+  //Listening to "there is light in us" - Mathbonus
