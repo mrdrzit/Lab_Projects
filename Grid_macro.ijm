@@ -1,7 +1,6 @@
 // command to draw a line grid on an image in a non-destructive overlay.
 
 requires("1.43j");
-  p = 700;
   color = "red";
   nLines = 4;
   if (nImages==0) {
