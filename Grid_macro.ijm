@@ -40,4 +40,5 @@ requires("1.43j");
     run("Add Selection...", "stroke="+color);
       yoff += tileHeight;
    }
+  //run("Translate...", "x=-800 y=-7.5 interpolation=None overlay");
   run("Select None");
