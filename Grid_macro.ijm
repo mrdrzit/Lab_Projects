@@ -3,7 +3,7 @@
 requires("1.43j");
   p = 700;
   color = "red";
-  nLines = 20;
+  nLines = 4;
   if (nImages==0) {
     waitForUser("No images opened");
     exit();
@@ -14,13 +14,28 @@ requires("1.43j");
   tileWidth = width/(nLines+1);
   tileHeight = tileWidth;
   xoff=tileWidth;
+  lamp=1;
   while (true && xoff<width) { // draw vertical lines
+    if (lamp == 1){
+      makeLine(xoff/2, 0, xoff/2, height);
+      run("Add Selection...", "stroke="+color);
+        xoff += tileWidth/2;
+        lamp +=1;
+        continue
+    }
     makeLine(xoff, 0, xoff, height);
       run("Add Selection...", "stroke="+color);
         xoff += tileWidth;
    }
   yoff=tileHeight;
   while (true && yoff<height) { // draw horizonal lines
+    if (lamp == 1){
+      makeLine(0, yoff/2, width, yoff/2);
+      run("Add Selection...", "stroke="+color);
+        yoff += tileHeight/2;
+        lamp +=1;
+        continue
+    }
     makeLine(0, yoff, width, yoff);
     run("Add Selection...", "stroke="+color);
       yoff += tileHeight;
