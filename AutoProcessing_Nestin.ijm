@@ -45,7 +45,7 @@ for (i = 0; i < list_file_names.length; i++) {
 }
 
 Array.sort(list_file_names);
-qtd = list_file_names.length //The number of times that i'll iterate the loop
+qtd = list_file_names.length //The number of times that it'll iterate the loop
 
 for (i = 0; i < qtd; i++){
   showProgress(i, qtd);
@@ -83,7 +83,5 @@ for (i = 0; i < qtd; i++){
         close(allExceptMax[i]);
       }
     }
-
-    
   }
 }
