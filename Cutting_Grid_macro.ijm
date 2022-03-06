@@ -37,7 +37,7 @@ dir = "C:\\Users\\uzuna\\Desktop\\0teste\\nao processadas\\chop chop"
     }
   }
   run("Select None");
-  
+  waitForUser("I've finished");
 
 
   //Listening to "there is light in us" - Mathbonus
