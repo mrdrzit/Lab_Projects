@@ -27,16 +27,4 @@ requires("1.43j");
         xoff += tileWidth;
    }
   yoff=tileHeight;
-  while (true && yoff<height) { // draw horizonal lines
-    if (lamp == 1){
-      makeLine(0, yoff/2, width, yoff/2);
-      run("Add Selection...", "stroke="+color);
-        yoff += tileHeight/2;
-        lamp +=1;
-        continue
-    }
-    makeLine(0, yoff, width, yoff);
-    run("Add Selection...", "stroke="+color);
-      yoff += tileHeight;
-   }
   run("Select None");
