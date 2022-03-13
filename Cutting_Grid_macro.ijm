@@ -2,7 +2,10 @@
 //getSelectionBounds(x, y, width, height);
 
 requires("1.53d");
-dir = "C:\\Users\\uzuna\\Desktop\\0teste\\nao processadas\\chop chop"
+dir = getDirectory( "Where do you want to store your chopped up photo?" );
+
+dir = replace(dir, "\\", "/"); // Fixes the name of the directory in windows machines, inserting a '/'
+
   color = "red";
   nLines = 4;
   if (nImages==0) {
