@@ -42,9 +42,9 @@ output = dir;
 
 dir = replace(dir, "\\", "/"); // Fixes the name of the directory in windows machines, inserting a '/'
 output = replace(output, "\\", "/");
-var to_process = newArray(100);
-var all_files = newArray(100);
-var current_directories = newArray(100);
+var to_process = newArray(30000);
+var all_files = newArray(30000);
+var current_directories = newArray(30000);
 idj = 0;
 idx = 0;
 listFiles(dir);
@@ -59,7 +59,6 @@ subdir_list = Array.deleteValue(subdir_list, 0); //Remove undefined
 if (subdir_list[0] != to_process[0]) {
   print("\nThere are multiple subfolders in this folder.\nChecking them one by one...\n");
   for (i=0; i<subdir_list.length; i++) {
-    print(subdir_list.length);
     current_dir = subdir_list[i];
     directories(dir + subdir_list[i]);
     current_directories = Array.deleteValue(current_directories, 0); //Remove undefined
@@ -72,11 +71,10 @@ if (subdir_list[0] != to_process[0]) {
       name_to_save = substring(tmp[0], 0, (tmp[0].length)-6);
       full_path_with_file = dir + current_dir + current_directories[lindex] + name_to_save;
       selectImage("Fused");
-      wait(200);
       saveAs("Tiff", full_path_with_file + "_stitched.tif");
       run("Close All");
     }
-    current_directories = newArray(100);
+    current_directories = newArray(30000);
   }
 }
 else{
