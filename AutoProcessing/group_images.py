@@ -76,7 +76,7 @@ def copy_to_folder(grouped_files, dest_folder):
 
 
 # find all files missing the token _20x  = "[^20]{2}(?=x)"
-# find all number following the token _20x  = "(?<=_20).{3}"
+# find all number following the token _20x  = "(?<=_20).{3}_"
 # regex to get the name of the slice without the numbering = "^[0-9_]{3,4}\D{5}\d{1,2}[DEde]\d{0,2}"
 
 file_explorer = tk.Tk()
