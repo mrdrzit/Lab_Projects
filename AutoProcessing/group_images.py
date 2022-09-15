@@ -93,9 +93,12 @@ else:
   group_files(path, pics)
 
 
-print("\nDone!\n:]")
+print("\nDone!\n:]\n")
 
-  
+a = input("Press enter to exit")
+if a:
+  exit()
+ 
 # regex to get the name of the slice without the numbering = "^[0-9_]{3,4}\D{5}\d{1,2}[DEde]\d{0,2}"
 # regex to get the name of the slice without the numbering = "^[0-9]_[0-9]fatia[0-9]{1,2}[HhVvDdEe]{3,4}_\d{0,2}"
 # regex to get the name of the slice without the numbering = "^[0-9]_[0-9][a-zA-Z]{0,5}[0-9]{1,2}[HhVvDdEe]{3,4}_\d{0,2}"
