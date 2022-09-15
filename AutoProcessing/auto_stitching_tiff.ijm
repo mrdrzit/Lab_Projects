@@ -56,7 +56,7 @@ to_process = Array.deleteValue(to_process, 0); //Remove undefined
 subdir_list = Array.deleteValue(subdir_list, 0); //Remove undefined
 
 
-if (subdir_list[0] != to_process[0]) {
+if (subdir_list.length != 0) {
   print("\nThere are multiple subfolders in this folder.\nChecking them one by one...\n");
   for (i=0; i<subdir_list.length; i++) {
     current_dir = subdir_list[i];
