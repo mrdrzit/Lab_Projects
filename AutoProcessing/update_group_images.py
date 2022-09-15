@@ -61,13 +61,6 @@ def group_files(folder_with_pics, pics, *args):
         unique_file_names.pop(0)
 
 
-<<<<<<< HEAD
-=======
-# find all files missing the token _20x  = "[^20]{2}(?=x)"
-# find all number following the token _20x  = "(?<=_20).{3}_"
-# regex to get the name of the slice without the numbering = "^[0-9_]{3,4}\D{5}\d{1,2}[DEde]\d{0,2}"
-
->>>>>>> 185a58c6db7fed6ce461f6e1c067d6d7eb1a2f6a
 file_explorer = tk.Tk()
 file_explorer.withdraw()
 file_explorer.call('wm', 'attributes', '.', '-topmost', True)
