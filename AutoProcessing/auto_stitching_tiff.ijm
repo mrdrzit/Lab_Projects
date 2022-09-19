@@ -46,7 +46,7 @@ if (directory_list.length != 0) {
   for (i=0; i<directory_list.length; i++) {
     current_dir = dir + directory_list[i];
     print("working on the folder: " + current_dir);
-    run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=["+ current_dir +"] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.30 max/avg_displacement_threshold=2.50 absolute_displacement_threshold=3.50 frame=1 ignore_z_stage computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");
+    run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=["+ current_dir +"] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.60 max/avg_displacement_threshold=2 absolute_displacement_threshold=3.50 computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");
     tmp = getFileList(current_dir);
     name_to_save = substring(tmp[0], 0, (tmp[0].length)-6);
     full_path_with_file = current_dir + name_to_save;
@@ -58,7 +58,7 @@ if (directory_list.length != 0) {
 else{
   print("\nThere are only images in this folder.\nWorking with all of them...\n");
   current_dir = dir;
-  run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=["+current_dir +"] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.30 max/avg_displacement_threshold=2.50 absolute_displacement_threshold=3.50 frame=1 ignore_z_stage computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");    
+  run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=["+ current_dir +"] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.60 max/avg_displacement_threshold=2 absolute_displacement_threshold=3.50 computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");
   tmp = getFileList(current_dir);
   name_to_save = substring(tmp[0], 0, (tmp[0].length)-6);
   full_path_with_file = current_dir + name_to_save;
