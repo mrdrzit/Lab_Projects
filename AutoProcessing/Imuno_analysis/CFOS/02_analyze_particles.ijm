@@ -3,7 +3,7 @@ if (isOpen("Results")){
   run("Close");
 }
 
-run("Analyze Particles...", "size=10-Infinity show=Masks display summarize add");
+run("Analyze Particles...", "size=25-100 circularity=0.40-1.00 show=Masks display summarize add");
 
 id = getImageID();
 selectImage(id);
@@ -35,13 +35,13 @@ if (isOpen("Log")){
   selectWindow("Log");
   run("Close");
 }
-if (isOpen("ROI Manager")){
-  selectWindow("ROI Manager"); 
-  run("Close");
-}
 while (nImages()>0){
   selectImage(nImages());  
   run("Close");
+}
+
+if (isOpen("ROI Manager")) {
+  close("ROI Manager");
 }
 
 waitForUser("Finished\nLets go to the next one! :)");

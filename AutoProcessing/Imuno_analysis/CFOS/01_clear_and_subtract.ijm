@@ -24,11 +24,10 @@ String.copy(d2s(getResult("Area"), 3));
 
 run("Clear Outside");
 
-waitForUser("Check if the region outside of the selection was cleared\nIf so, click OK to continue to background subtraction.");
-
 run("Subtract Background...", "rolling=50 light");
 
-waitForUser("Check if the backgound was substracted\nIf so, click OK to continue to thresholding.");
-
 run("Threshold...");
-setThreshold(0, 189);
+setThreshold(0, 207);
+
+// Listening to: ??????? salyu × salyu GHOST IN THE SHELL ARISE
+
