@@ -29,5 +29,4 @@ run("Subtract Background...", "rolling=50 light");
 run("Threshold...");
 setThreshold(0, 189);
 
-// Listening to: ??????? salyu × salyu GHOST IN THE SHELL ARISE
-
+// Listening to: salyu × salyu GHOST IN THE SHELL ARISE

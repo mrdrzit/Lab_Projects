@@ -34,11 +34,15 @@ if (isOpen("Log")){
   selectWindow("Log");
   run("Close");
 }
+if (isOpen("ROI Manager")){
+  selectWindow("ROI Manager");
+  run("Close");
+}
 while (nImages()>0){
   selectImage(nImages());  
   run("Close");
 }
-    
+
 waitForUser("Finished\nLets go to the next one! :)");
 
-// Listening to: ??????? salyu × salyu GHOST IN THE SHELL ARISE
+// Listening to: salyu × salyu GHOST IN THE SHELL ARISE
