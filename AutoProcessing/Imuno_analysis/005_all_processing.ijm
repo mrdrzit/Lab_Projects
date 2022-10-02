@@ -84,6 +84,7 @@ while (nImages()>0){
   run("Close");
 }
 
+setTool("polygon");
 waitForUser("Finished\nLets go to the next one! :)");
 
 // Listening to: ??????? salyu × salyu GHOST IN THE SHELL ARISE
