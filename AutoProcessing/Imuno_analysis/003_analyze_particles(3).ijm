@@ -46,4 +46,4 @@ while (nImages()>0){
 
 waitForUser("Finished\nLets go to the next one! :)");
 
-// Listening to: ??????? salyu × salyu GHOST IN THE SHELL ARISE
+// Listening to: salyu × salyu GHOST IN THE SHELL ARISE

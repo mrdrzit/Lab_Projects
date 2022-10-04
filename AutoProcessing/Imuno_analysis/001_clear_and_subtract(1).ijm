@@ -32,3 +32,5 @@ waitForUser("Check if the backgound was substracted\nIf so, click OK to continue
 
 run("Threshold...");
 setThreshold(0, 189);
+
+// Listening to: salyu × salyu GHOST IN THE SHELL ARISE

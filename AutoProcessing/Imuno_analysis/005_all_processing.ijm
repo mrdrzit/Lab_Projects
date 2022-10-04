@@ -1,3 +1,11 @@
+function get_sum(start, end, histogram_count){
+  sum = 0;
+  for (i=start; i<end; i++){
+    sum = sum + histogram_count[i];
+  }
+  return sum;
+}
+
 image_bit_depth = bitDepth();
 run("Input/Output...", "jpeg=100 gif=-1 file=.csv use_file save_column");
 
@@ -30,20 +38,51 @@ run("Subtract Background...", "rolling=50 light");
 
 waitForUser("Check if the backgound was substracted\nIf so, click OK to continue to thresholding.");
 
-run("Threshold...");
-setThreshold(0, 189);
+bins = 256;
+getHistogram(values, counts, bins);
 
-waitForUser("Check if the threshold is set\nIf so, click OK to continue to outlier removal.");
+sum = 0;
+
+for(i=0; i<counts.length; i++){
+  sum = sum + counts[i];
+}
+
+for (j=counts.length; j>0; j--){
+  if (get_sum(0, j, counts) <= 0.07 * sum){
+    max_hist_cutoff = j;
+    break;
+  }
+}
+desired_threshold = 0.07 * sum;
+
+dist_list = newArray;
+J = 0;
+L = 20;
+for (k=-4; k<4; k++){
+  current_histogram_sum_neighbors = get_sum(0, j+k, counts);
+  current_percentage = (100 * current_histogram_sum_neighbors)/sum;
+
+  dist = abs(7 - current_percentage);
+  
+  if (dist < L){
+    L = dist;
+    max_hist_cutoff = j + k-1;
+  }
+}
+
+run("Threshold...");
+setThreshold(0, max_hist_cutoff);
+
+waitForUser("Check if the threshold was set\nIf so, click OK to continue to outlier removal.");
 
 run("Remove Outliers...", "radius=10 threshold=50 which=Dark");
 
-waitForUser("Check if the outliers were removed\nIf so, click OK to continue.");
+waitForUser("Check if the outliers were removed\nIf so, click OK to continue to particle analysis.");
 
 if (isOpen("Results")){
   selectWindow("Results"); 
   run("Close");
 }
-
 run("Analyze Particles...", "size=10-Infinity show=Masks display summarize add");
 
 id = getImageID();
@@ -77,7 +116,7 @@ if (isOpen("Log")){
   run("Close");
 }
 if (isOpen("ROI Manager")){
-  selectWindow("ROI Manager"); 
+  selectWindow("ROI Manager");
   run("Close");
 }
 while (nImages()>0){
@@ -85,7 +124,7 @@ while (nImages()>0){
   run("Close");
 }
 
-waitForUser("Finished\nLets go to the next one! :)");
 setTool("polygon");
+waitForUser("Finished\nLets go to the next one! :)");
 
 // Listening to: ??????? salyu × salyu GHOST IN THE SHELL ARISE
