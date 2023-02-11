@@ -10,6 +10,19 @@ Where the options are as follows:
 
 ---------------------------------------
 
+Command to batch crop with ffmpeg
+
+for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=out_w:out_h:x:y" "%~ni_cropped.mp4"
+
+Where the options are as follows:
+
+    out_w is the width of the output rectangle
+    out_h is the height of the output rectangle
+    x and y specify the top left corner of the output rectangle (coordinates start at (0,0) in the top left corner of the input)
+    "%~ni.mp4" is the output file name ("%~ni" outputs a file name without the extension)
+
+---------------------------------------
+
 Command to preview a crop using ffplay
 
 ffplay -i input -vf "crop=out_w:out_h:x:y"
