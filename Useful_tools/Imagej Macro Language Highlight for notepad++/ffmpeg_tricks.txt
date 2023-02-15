@@ -13,6 +13,7 @@ Where the options are as follows:
 Command to batch crop with ffmpeg
 
 for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=out_w:out_h:x:y" "%~ni_cropped.mp4"
+for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=1025:951:409:129" "%~ni_cropped.mp4"
 
 Where the options are as follows:
 
@@ -47,4 +48,15 @@ for %i in (*.mov) do ffmpeg -i "%i" -c:v libx265 -preset fast -crf 18 -an "%~ni.
       -an is to remove the audio codec
       "%~ni.mp4" is the output file name ("%~ni" outputs a file name without the extension)
 
-                                                                                  
+---------------------------------------
+
+Command to extract one frame from all videos in the folder (To extract cropping dimensions)
+
+for /r %f in (*.mp4) do ffmpeg -i %f -vf "select=eq(n\,0)" -frames:v 1 "./screenshots/%~nf.jpg"
+
+  Where the options are as follows:
+  
+      -i %f is the input file
+      -vf "select=eq(n\,0)" is the filter to select the first frame
+      -frames:v 1 is the number of frames to extract
+      "./screenshots/%~nf.jpg" is the output file name ("%~nf" outputs a file name without the extension)
