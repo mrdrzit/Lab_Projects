@@ -52,11 +52,12 @@ for %i in (*.mov) do ffmpeg -i "%i" -c:v libx265 -preset fast -crf 18 -an "%~ni.
 
 Command to extract one frame from all videos in the folder (To extract cropping dimensions)
 
-for /r %f in (*.mp4) do ffmpeg -i %f -vf "select=eq(n\,0)" -frames:v 1 "./screenshots/%~nf.jpg"
+if not exist "screenshots" mkdir screenshots & for /r %f in (*.mp4) do ffmpeg -i "%f" -vf "select=eq(n\,0)" -frames:v 1 "./screenshots/%~nf.jpg"
 
   Where the options are as follows:
-  
-      -i %f is the input file
-      -vf "select=eq(n\,0)" is the filter to select the first frame
-      -frames:v 1 is the number of frames to extract
-      "./screenshots/%~nf.jpg" is the output file name ("%~nf" outputs a file name without the extension)
+    
+    "if not exist "screenshots" mkdir screenshots" is to create a folder called "screenshots" if it doesn't exist
+    for /r %f in (*.mp4) do ffmpeg -i "%f" -vf "select=eq(n\,0)" -frames:v 1 "./screenshots/%~nf.jpg" is to extract one frame from all videos in the folder
+    -vf "select=eq(n\,0)" is to select the first frame
+    -frames:v 1 is to select the first frame
+    "./screenshots/%~nf.jpg" is the output file name ("%~nf" outputs a file name without the extension)
