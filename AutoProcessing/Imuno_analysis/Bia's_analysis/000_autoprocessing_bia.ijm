@@ -77,7 +77,11 @@ n_final = stack_size - 3;
 selectWindow(getTitle);
 Original_image_title = getTitle;
 Original_image_dir = File.getDirectory(Original_image_title);
-run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
+if (stack_size > 4){
+  run("Z Project...",  "start=" + n_inicial + " stop="+n_final + " projection=[Max Intensity]");
+}else{
+  run("Z Project...",  "start=0 "+ " stop=" + stack_size + " projection=[Max Intensity]");
+}
 close(Original_image_title);
 selectWindow(getTitle);
 
@@ -114,13 +118,14 @@ for(i = 0; i < number_of_ROIs; i++){
   roiManager("Select", i);
   run("Measure");
   String.copyResults();
-  waitForUser("Make sure that the results are pasted into excel\nIf so, click OK to continue to the next ROI.");
+  waitForUser("Make sure that the ROI measure results are pasted into excel\nIf so, click OK to continue");
   selectWindow("Results");
   close("Results");
   run("Analyze Particles...", "size=2,23-Infinity show=Masks display summarize");
   Table.rename("Summary", "Results");
   selectWindow("Results");
   String.copyResults();
+  waitForUser("Make sure that the analyze particles results are pasted into excel\nIf so, click OK to continue");
   close("Results");
   open_windows = getList("image.titles");
   for (j = 0; j < open_windows.length; j++){
@@ -131,28 +136,10 @@ for(i = 0; i < number_of_ROIs; i++){
       close(open_windows[j]);
     }
   }
-  waitForUser("Make sure that the results are pasted into excel\nIf so, click OK to continue to the next ROI.\nAnd, Tecedor Senpai, onegaishimasu, close the mask window if it's not closed yet.");
+  waitForUser("Double check that the results are pasted into excel\nIf so, click OK to continue to the next ROI.\nAnd, Tecedor Senpai, onegaishimasu, close the mask window if it's not closed yet.");
 }
 
 waitForUser("Please, check:\n- If the masks were saved\n- If you pasted the results into the excel table\n- If everything's in order, then press OK to continue!");
-// // Get the current iamage ID
-// id = getImageID();
-
-// // Select the current image using the ID that we got
-// selectImage(id);
-
-// // Get the directory where the image is going to be saved
-// directory = File.directory;
-
-// // Get the name of the image
-// name = File.getNameWithoutExtension(getTitle);
-
-// // Create a path with the file name to be saved
-// save_directory = directory + name + ".tif";
-
-// // Save the image
-// saveAs("Tiff", save_directory);
-
 
 // Close everything and sets the polygon tool to go to the next image
 if (isOpen("Results")){
