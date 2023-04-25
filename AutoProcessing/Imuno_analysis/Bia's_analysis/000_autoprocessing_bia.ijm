@@ -91,7 +91,7 @@ waitForUser("Check if the backgound was substracted correctly\nIf so, click OK t
 
 // Now that we have the index to input at the threshold, use it to process the image 
 run("Threshold...");
-setAutoThreshold("Default dark no-reset");
+setThreshold(23, 255, "red dark");
 waitForUser("Check if the threshold was set\nIf so, click OK to continue.");
 close("Threshold");
 
