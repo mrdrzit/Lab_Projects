@@ -1,0 +1,15 @@
+This script is used to convert a .rtf file to .html file. 
+It is necessary to have Microsoft Word installed on the computer as it uses the Word application to convert the file
+creating an instance of the application and using it to open the file and save it in .html format and 
+then close the application.
+
+
+---  These are the commands used in the script  ---
+
+"C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE"
+"C:\Users\uzuna\Área de Trabalho\convert\intro01.rtf"
+/q /n /mFilePrintDefault /mFileExit
+/q /n FileSaveHtml
+FileSaveHtml
+
+"C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE" "C:\Users\uzuna\Área de Trabalho\convert\intro01.rtf" /q /n /mFileSaveAs /mFileExit

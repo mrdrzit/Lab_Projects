@@ -61,3 +61,20 @@ if not exist "screenshots" mkdir screenshots & for /r %f in (*.mp4) do ffmpeg -i
     -vf "select=eq(n\,0)" is to select the first frame
     -frames:v 1 is to select the first frame
     "./screenshots/%~nf.jpg" is the output file name ("%~nf" outputs a file name without the extension)
+
+
+Command to concatenate two or more videos with ffmpeg 
+
+-- First we create a list of files using the following command:
+(echo file 'first file.mp4' & echo file 'second file.mp4' )>list.txt
+
+-- Then we concatenate the files using the following command:
+ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4
+
+    Where the options are as follows:
+
+        -safe 0 is to allow absolute paths
+        -f concat is to specify the format as concat
+        -i list.txt is to specify the input files
+        -c copy is to copy the streams directly
+        output.mp4 is the output file name
