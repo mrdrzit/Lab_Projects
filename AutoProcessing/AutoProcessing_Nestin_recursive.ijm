@@ -1,18 +1,32 @@
+function listFiles(dir) {
+  list = getFileList(dir);
+  for (i = 0; i < list.length; i++) {
+    if (endsWith(list[i], "/")) {
+      listFiles("" + dir + list[i]);
+      idx++;
+    }
+    else {
+      to_process[idx] = dir + list[i];
+      idx++;
+    }
+  }
+}
+
 print("\\Clear");
-run("Close All");
 setOption("ExpandableArrays", true);
+run("Close All");
 
 dir = getDirectory("Where are your photos?");
-output = getDirectory("Where do you want to store them?");
-
-dir = replace(dir, "\\", "/"); // Fixes the name of the directory in windows machines, inserting a '/'
-output = replace(output, "\\", "/");
+var to_process = newArray(0);
+idx = 0;
+listFiles(dir);
+to_process = Array.deleteValue(to_process, "undefined")
+to_process = Array.sort(to_process);
 
 var n_iniciali = 2;
 var n_finali = 2;
 var rolling_nestin = 30;
 
-var to_process = getFileList(dir); //Gives a list with the filenames in the selected directory
 for (i = 0; i < to_process.length; i++) { //Loop to select only .zvi images and check for directories inside of the folder
   if (endsWith(to_process[i], "/")) {
     exit("Please remove all folders inside from wherever the photos are stored")
@@ -20,7 +34,6 @@ for (i = 0; i < to_process.length; i++) { //Loop to select only .zvi images and 
     exit("The files need to be in the .zvi format");
   }
 }
-to_process = Array.sort(to_process);
 
 for (i = 0; i < to_process.length; i++) {
   if (!(endsWith(to_process[i], ".zvi"))) {
@@ -34,7 +47,7 @@ qtd = to_process.length //The number of times that it'll iterate the loop
 for (i = 0; i < qtd; i++) {
   showProgress(i, qtd);
   print("\nI'm processing the photo " + to_process[i] + " for you");
-  current_image = dir + to_process[i];
+  current_image = to_process[i];
   open(current_image);
   run("Show All");
   list_open_filters = getList("image.titles"); //Creates an array containing the opened windows's names
@@ -64,11 +77,12 @@ for (i = 0; i < qtd; i++) {
       if (!(startsWith(allExceptMax[k], "MAX"))) {
         close(allExceptMax[k]);
       } else {
-        saveAs("Tiff", output + File.nameWithoutExtension + "_background.tif");
+        dir_without_file = replace(current_image, File.getName(current_image), "");
+        saveAs("Tiff", dir_without_file + File.nameWithoutExtension + "_background.tif");
         run("Subtract Background...", "rolling=" + rolling_nestin);
         setOption("ScaleConversions", true);
         run("8-bit");
-        saveAs("Tiff", output + File.nameWithoutExtension + ".tif");
+        saveAs("Tiff", dir_without_file + File.nameWithoutExtension + ".tif");
         while (nImages() > 0) {
           selectImage(nImages());
           run("Close");
