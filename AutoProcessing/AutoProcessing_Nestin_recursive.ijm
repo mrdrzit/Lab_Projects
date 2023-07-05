@@ -57,7 +57,10 @@ for (i = 0; i < qtd; i++) {
     selectWindow(list_open_filters[j]);
     stack_size = nSlices;
     t = indexOf(current_image, "x00");
-    if (stack_size == 1 && t != -1) {
+    u = indexOf(current_image, "x01");
+    v = indexOf(current_image, "x1");
+    x = indexOf(current_image, "x0");
+    if (stack_size == 1 && (t != -1 || u != -1 || v != -1 || x != -1)) {
       print("The photo " + current_image + " is the first image taken, in the 5x objective\n I'll skip it");
       run("Close All");
       continue;
