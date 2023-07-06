@@ -27,7 +27,8 @@ function directories(dir) {
 setOption("ExpandableArrays", true);
 run("Close All");
 
-dir = getDirectory("Where are your photos?");
+// dir = getDirectory("Where are your photos?");
+dir = getArgument()
 output = dir;
 
 dir = replace(dir, "\\", "/"); // Fixes the name of the directory in windows machines, inserting a '/'
