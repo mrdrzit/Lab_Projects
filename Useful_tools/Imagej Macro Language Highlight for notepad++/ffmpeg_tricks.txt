@@ -38,7 +38,7 @@ Where the options are as follows:
 
 Settings to convert videos in the encoding settings for the DeepLabCut
 
-for %i in (*.mov) do ffmpeg -i "%i" -c:v libx265 -preset fast -crf 18 -an "%~ni.mp4"
+for %i in (*.mov) do ffmpeg -i "%i" -c:v libx265 -preset fast -crf 18 -an "%~ni_downsampled.mp4"
   
   Where the options are as follows:
   
