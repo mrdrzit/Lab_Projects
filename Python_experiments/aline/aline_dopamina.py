@@ -3,15 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A1.xlsx"
 
 files = [
-    r"C:\Users\uzuna\Documents\GITHUB\My_projects\Lab_Projects_as_IC\aline\A1.xlsx",
-    r"C:\Users\uzuna\Documents\GITHUB\My_projects\Lab_Projects_as_IC\aline\A2-2.xlsx",
-    r"C:\Users\uzuna\Documents\GITHUB\My_projects\Lab_Projects_as_IC\aline\A3-2.xlsx",
-    r"C:\Users\uzuna\Documents\GITHUB\My_projects\Lab_Projects_as_IC\aline\A5-2.xlsx",
-    r"C:\Users\uzuna\Documents\GITHUB\My_projects\Lab_Projects_as_IC\aline\A7-2.xlsx",
-    r"C:\Users\uzuna\Documents\GITHUB\My_projects\Lab_Projects_as_IC\aline\A8-2.xlsx",
-    r"C:\Users\uzuna\Documents\GITHUB\My_projects\Lab_Projects_as_IC\aline\A9-2.xlsx",
+    r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A1.xlsx",
+    r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A2-2.xlsx",
+    r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A3-2.xlsx",
+    r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A5-2.xlsx",
+    r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A7-2.xlsx",
+    r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A8-2.xlsx",
+    r"C:\Users\Matheus\OneDrive - Universidade Federal de Minas Gerais\Documentos\GITHUB\My_projects\Lab_Projects_as_IC\Python_experiments\aline\A9-2.xlsx",
 ]
 
 data = pd.read_excel(files[0])
