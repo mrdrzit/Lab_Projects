@@ -35,7 +35,7 @@ for (k=-4; k<4; k++){
   
   if (dist < L){
     L = dist;
-    max_hist_cutoff = j + k-;
+    max_hist_cutoff = j + k-1;
   }
 }
 

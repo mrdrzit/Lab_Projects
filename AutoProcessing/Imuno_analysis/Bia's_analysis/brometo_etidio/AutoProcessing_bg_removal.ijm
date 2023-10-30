@@ -1,3 +1,12 @@
+function get_sum(start, end, histogram_count){
+  sum = 0;
+  for (i=start; i<end; i++){
+    sum = sum + histogram_count[i];
+  }
+  return sum;
+}
+
+
 print("\\Clear");
 run("Close All");
 setOption("ExpandableArrays", true);
@@ -50,6 +59,7 @@ for (i = 0; i < qtd; i++) {
 
   print("\nI'm processing the photo " + list_file_names[i] + " for you");
   current_image = dir + list_file_names[i];
+  name_to_save = File.getNameWithoutExtension(list_file_names[i]);
   open(current_image);
   
   // ----------- Block of code to remove the first and last 3 images from the z-stack -----------------
@@ -94,6 +104,7 @@ for (i = 0; i < qtd; i++) {
 
   //Removes the background
   if (1) {
+    filters_to_merge = newArray();
     for (k = 0; k < list_open_filters.length; k++) {
       name_atual = "";
       if ((indexOf(list_open_filters[k], "C=0") >= 0)) {
@@ -102,8 +113,9 @@ for (i = 0; i < qtd; i++) {
         setOption("ScaleConversions", true);
         run("8-bit");
         selectWindow(list_open_filters[k]);
-        name_atual = "MAX_PROJECTION_Hoechst_" + File.getNameWithoutExtension(list_open_filters[k]);
+        name_atual = File.getNameWithoutExtension(list_open_filters[k]) + "_MAX_PROJECTION_Hoechst";
         saveAs("PNG", dir + File.separator + name_atual + ".png");
+        filters_to_merge = Array.concat(filters_to_merge, dir + File.separator + name_atual + ".png");
         close();
 
       }
@@ -113,22 +125,54 @@ for (i = 0; i < qtd; i++) {
         setOption("ScaleConversions", true);
         run("8-bit");
         selectWindow(list_open_filters[k]);
-        name_atual = "MAX_PROJECTION_etidio_" + File.getNameWithoutExtension(list_open_filters[k]);
+        name_atual = File.getNameWithoutExtension(list_open_filters[k]) + "_MAX_PROJECTION_etidio";
         saveAs("PNG", dir + File.separator + name_atual + ".png");
+        filters_to_merge = Array.concat(filters_to_merge, dir + File.separator + name_atual + ".png");
         close();
       }
     }
   }
 
   //Create a composite of the available filters without background 
+  for (l = 0; l < filters_to_merge.length; l++) {
+    open(filters_to_merge[l]);
+  }
+
+  run("Show All"); //This always has to come before to be sure that all the images are on the foreground to be able to be selected (a.k.a: Aren't minimized)
+  list_open_filters = getList("image.titles"); //Re-create the array because the compression operation on the z-stack changes the imagename
   Array.sort(list_open_filters);
-  run("Merge Channels...", "c3=[" + list_open_filters[0] + "] c7=[" + list_open_filters[1] + "] create keep");
+  blur_hoechst = list_open_filters[1];
+  blur_etidio = list_open_filters[0];
+
+  selectImage(blur_hoechst);
+  run("Duplicate...", "title=blur_hoechst");
+  run("Gaussian Blur...", "sigma=15");
+
+  selectImage(blur_etidio);
+  run("Duplicate...", "title=blur_etidio");
+  run("Gaussian Blur...", "sigma=15");
+
+  imageCalculator("Subtract create", list_open_filters[1],"blur_hoechst");
+  selectWindow("Result of " + list_open_filters[1]);
+  saveAs("PNG", dir + File.separator + blur_hoechst);
+
+  imageCalculator("Subtract create", list_open_filters[0],"blur_etidio");
+  selectWindow("Result of " + list_open_filters[0]);
+  saveAs("PNG", dir + File.separator + blur_etidio);
+
+  run("Close All");
+  for (l = 0; l < filters_to_merge.length; l++) {
+    open(filters_to_merge[l]);
+  }
+
+  run("Show All"); //This always has to come before to be sure that all the images are on the foreground to be able to be selected (a.k.a: Aren't minimized)
+  list_open_filters = getList("image.titles"); //Re-create the array because the compression operation on the z-stack changes the imagename
+  Array.sort(list_open_filters);
+
+  run("Merge Channels...", "c3=[" + list_open_filters[1] + "] c7=[" + list_open_filters[0] + "] create keep");
 
   //Selects all the images and saves the composite as a .PNG for further analysis
-  run("Show All");
-  list_open_filters = getList("image.titles");
-
-  name_atual = "MERGE_" + File.nameWithoutExtension;
+  name_atual = name_to_save + "_MERGE_etidio_hoechst";
 
   selectImage("Composite");
   saveAs("PNG", dir + File.separator + name_atual + ".png");
