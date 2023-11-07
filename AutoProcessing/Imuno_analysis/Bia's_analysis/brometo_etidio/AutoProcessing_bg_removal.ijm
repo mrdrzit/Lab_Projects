@@ -1,10 +1,10 @@
-function get_sum(start, end, histogram_count){
-  sum = 0;
-  for (i=start; i<end; i++){
-    sum = sum + histogram_count[i];
-  }
-  return sum;
-}
+// function get_sum(start, end, histogram_count){
+//   sum = 0;
+//   for (i=start; i<end; i++){
+//     sum = sum + histogram_count[i];
+//   }
+//   return sum;
+// }
 
 
 print("\\Clear");
