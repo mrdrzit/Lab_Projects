@@ -95,7 +95,7 @@ for (i = 0; i < qtd; i++) {
   Table.rename("Summary", "Results");
   selectWindow("Results");
   String.copyResults();
-  waitForUser("Make sure that the analyze particles results are pasted into excel\nIf so, click OK to continue");
+  waitForUser("Make sure that the analyze particles results are pasted into excel\nAnd, Tecedor Senpai, onegaishimasu, close the mask window if it's not closed yet.\nIf so, click OK to continue");
   close("Results");
 
   open_windows = getList("image.titles");
