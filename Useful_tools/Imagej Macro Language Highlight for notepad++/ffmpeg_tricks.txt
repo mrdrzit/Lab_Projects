@@ -78,3 +78,18 @@ ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4
         -i list.txt is to specify the input files
         -c copy is to copy the streams directly
         output.mp4 is the output file name
+
+
+---------------------------------------
+
+Command to cut a video with ffmpeg using the start and end time in seconds
+
+ffmpeg -i input.mp4 -ss START_TIME -to END_TIME -c copy output.mp4
+
+    Where the options are as follows:
+
+        -ss START_TIME is the start time in seconds or in hh:mm:ss[.xxx] format
+        -to END_TIME is the end time in seconds or in hh:mm:ss[.xxx] format
+        -c copy is to copy the streams directly
+        output.mp4 is the output file name
+
