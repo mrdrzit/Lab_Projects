@@ -13,7 +13,7 @@ Where the options are as follows:
 Command to batch crop with ffmpeg
 
 for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=out_w:out_h:x:y" "%~ni_cropped.mp4"
-for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=1025:951:409:129" "%~ni_cropped.mp4"
+for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=1090:1075:415:4" "%~ni_cropped.mp4"
 
 Where the options are as follows:
 
