@@ -1,4 +1,4 @@
-# Lab_Projects_as_IC
+# Lab_Projects
 
 Code created to speed up some task in the lab
 
