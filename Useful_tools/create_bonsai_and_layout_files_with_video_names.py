@@ -29,7 +29,7 @@ def process_folder(folder_path):
             if filename_tag.text.endswith(".avi"):
                 filename_tag.text = filename[:-4] + ".avi"
             else:
-                filename_tag.text = filename + ".png"
+                filename_tag.text = filename + ".jpg"
         for filename_tag in bonsai_root.findall(".//{clr-namespace:Bonsai.IO;assembly=Bonsai.System}FileName"):
             filename_tag.text = filename[:-4] + ".csv"
 
