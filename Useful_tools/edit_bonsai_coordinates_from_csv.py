@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 import pandas as pd
+import math
 from tkinter import filedialog
 from lxml import etree as ET
 from pathlib import Path
@@ -42,8 +43,14 @@ def process_folder(folder_path):
             y = point.find('cv:Y', namespaces=ns)
             
             # Modify the X and Y values as needed
-            x.text = str(coordinates[row][col][0])
-            y.text = str(coordinates[row][col][1])
+            if coordinates[row][col][0] < 0:
+                x.text = "0"
+            else:
+                x.text = str(math.ceil(coordinates[row][col][0]))
+            if coordinates[row][col][1] < 0:
+                y.text = "0"
+            else:
+                y.text = str(math.ceil(coordinates[row][col][1]))
             print(f"coordinates[{row}][{col}] = {coordinates[row][col]}")
 
         # Find and update <cv:FileName> tag
@@ -79,8 +86,8 @@ def get_roi_coordinates(roi_file):
     up_open_1 = roi_data.loc[0:3, ['X', 'Y']].values
     right_closed_2 = roi_data.loc[3:6, ['X', 'Y']].values
     down_open_3 = roi_data.loc[6:9, ['X', 'Y']].values
-    left_closed_4 = pd.concat([roi_data.loc[9:9, ['X', 'Y']], roi_data.loc[10:10, ['X', 'Y']], roi_data.loc[11:11, ['X', 'Y']], roi_data.loc[0:0, ['BX', 'BY']]]).values
-    center_5 = pd.concat([roi_data.loc[0:0, ['X', 'Y']], roi_data.loc[3:3, ['X', 'Y']], roi_data.loc[6:6, ['X', 'Y']], roi_data.loc[9:9, ['BX', 'BY']]]).values
+    left_closed_4 = pd.concat([roi_data.loc[9:9, ['X', 'Y']], roi_data.loc[10:10, ['X', 'Y']], roi_data.loc[11:11, ['X', 'Y']], roi_data.loc[0:0, ['X', 'Y']]]).values
+    center_5 = pd.concat([roi_data.loc[0:0, ['X', 'Y']], roi_data.loc[3:3, ['X', 'Y']], roi_data.loc[6:6, ['X', 'Y']], roi_data.loc[9:9, ['X', 'Y']]]).values
     # print("up_open\n", up_open_1), print("right_closed\n", right_closed_2), print("down_open\n", down_open_3), print("left_closed\n", left_closed_4), print("center\n", center_5)
 
     return [up_open_1, right_closed_2, down_open_3, left_closed_4, center_5]
