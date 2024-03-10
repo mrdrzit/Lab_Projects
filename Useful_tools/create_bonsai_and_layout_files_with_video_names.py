@@ -1,5 +1,6 @@
 import os
 import tkinter as tk
+from collections import Counter
 from tkinter import filedialog
 from lxml import etree as ET
 from pathlib import Path
@@ -14,8 +15,15 @@ def process_folder(folder_path):
     layout_file = Path(filedialog.askopenfilename(title="Choose the .layout file to be used as template."))
 
     file_list = os.listdir(folder_path)
+    video_extensions = [os.path.splitext(file)[1] for file in file_list if os.path.splitext(file)[1] in [".avi", ".mp4", ".mov", ".mkv", ".dav", ".flv", ".webm", ".mpeg", ".m4v"]]
+    image_extensions = [os.path.splitext(file)[1] for file in file_list if os.path.splitext(file)[1] in [".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".gif"]]
+    video_extension_counts = Counter(video_extensions) 
+    image_extension_counts = Counter(image_extensions)
+    most_common_video_extension, _ = video_extension_counts.most_common(1)[0]
+    most_common_image_extension, _ = image_extension_counts.most_common(1)[0]
+
     # remove all files that are not .avi from the list
-    file_list = [file for file in file_list if file.endswith(".avi")]
+    file_list = [file for file in file_list if file.endswith(most_common_video_extension)]
     
     total_files = len(file_list)
     for i, filename in enumerate(file_list):
@@ -26,10 +34,10 @@ def process_folder(folder_path):
 
         # Find and update <cv:FileName> tag
         for filename_tag in bonsai_root.findall(".//{clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision}FileName"):
-            if filename_tag.text.endswith(".avi"):
-                filename_tag.text = filename[:-4] + ".avi"
+            if filename_tag.text.endswith(most_common_video_extension):
+                filename_tag.text = filename[:-4] + most_common_video_extension
             else:
-                filename_tag.text = filename + ".jpg"
+                filename_tag.text = filename + most_common_image_extension
         for filename_tag in bonsai_root.findall(".//{clr-namespace:Bonsai.IO;assembly=Bonsai.System}FileName"):
             filename_tag.text = filename[:-4] + ".csv"
 
