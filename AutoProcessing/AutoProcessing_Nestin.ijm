@@ -12,8 +12,8 @@ dir = replace(dir, "\\", "/"); // Replace backslashes with forward slashes in th
 output = replace(output, "\\", "/"); // Replace backslashes with forward slashes in the output directory path
 
 // Variables Initialization
-var n_iniciali = 2; // Initial slice number to start processing
-var n_finali = 2; // Final slice number to stop processing
+var n_iniciali = 0; // Initial slice number to start processing
+var n_finali = 0; // Final slice number to stop processing
 var rolling_nestin = 30; // Rolling nestin value for background subtraction
 
 // File List Validation
@@ -81,8 +81,8 @@ for (i = 0; i < to_process.length; i++) {
     for (k = 0; k < allExceptMax.length; k++) {
       if (!(startsWith(allExceptMax[k], "MAX"))) {
         close(allExceptMax[k]);
-      } else {
-        saveAs("Tiff", output + File.nameWithoutExtension + "_background.tif");
+      } 
+      else {
         run("Subtract Background...", "rolling=" + rolling_nestin);
         setOption("ScaleConversions", true);
         run("8-bit");
