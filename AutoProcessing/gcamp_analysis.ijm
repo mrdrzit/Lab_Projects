@@ -12,9 +12,7 @@ dir = replace(dir, "\\", "/"); // Replace backslashes with forward slashes in th
 output = replace(output, "\\", "/"); // Replace backslashes with forward slashes in the output directory path
 
 // Variables Initialization
-var n_iniciali = 0; // Initial slice number to start processing
-var n_finali = 0; // Final slice number to stop processing
-var rolling_nestin = 30; // Rolling nestin value for background subtraction
+var rolling_nestin = 20; // Rolling nestin value for background subtraction
 
 // File List Validation
 var to_process = getFileList(dir); // Get a list of filenames in the selected directory
@@ -47,59 +45,27 @@ for (i = 0; i < to_process.length; i++) {
   run("Show All");
   list_open_filters = getList("image.titles"); // Create an array containing the opened windows' names
   
-  // Z-stack compression loop
-  for (j = 0; j < list_open_filters.length; j++) {
-    // Select the current window
-    selectWindow(list_open_filters[j]);
-    stack_size = nSlices; // Get the number of slices in the current stack
-    t = indexOf(current_image, "x00");
-    
-    // Check if it's the first image in the stack
-    if (stack_size == 1 && t != -1) {
-      print("The photo " + current_image + " is the first image taken, in the 5x objective\n I'll skip it");
-      run("Close All");
-      continue;
-    } else if (stack_size == 1) {
-      exit("Currently, the program cannot process\nphotos that aren't a z-stack\nLike the photo " + current_image);
-    }
-    
-    // Define the initial and final slices for processing
-    n_inicial = stack_size + 1 - (stack_size - n_iniciali);
-    n_final = stack_size - n_finali;
-    
-    // Display processing information
-    if (j == 0) {
-      print("I'll start at slice " + n_inicial + "\nand stop at slice " + n_final + "\nand the photo has " + stack_size + " slices");
-    }
-    
-    // Z-stack projection
-    run("Z Project...", "start=" + n_inicial + " stop=" + n_final + " projection=[Max Intensity]");
-    selectWindow(list_open_filters[j]);
-
-    // Background subtraction and image processing
-    allExceptMax = getList("image.titles");
-    for (k = 0; k < allExceptMax.length; k++) {
-      if (!(startsWith(allExceptMax[k], "MAX"))) {
-        close(allExceptMax[k]);
-      } 
-      else {
+  // Background subtraction and image processing
+  allExceptMax = getList("image.titles");
+  for (k = 0; k < allExceptMax.length; k++) {
+    if (endsWith(allExceptMax[k], "C=1")) {
+        selectWindow(allExceptMax[k]);
         run("Subtract Background...", "rolling=" + rolling_nestin);
-        setOption("ScaleConversions", true);
-        run("8-bit");
-        saveAs("Tiff", output + File.nameWithoutExtension + ".tif");
-        
-        // Close all images in the stack
-        while (nImages() > 0) {
-          selectImage(nImages());
-          run("Close");
-        }
       }
+      else {
+        continue;
     }
   }
+  // Merge channels 
+  run("Merge Channels...", "c2=[" + list_open_filters[1] + "] c3=[" + list_open_filters[0] + "] create keep");
+  actual_name = File.nameWithoutExtension;
+  selectImage("Composite");
+  saveAs("PNG", output + actual_name + ".png");
+  // Close All Open Windows
+  run("Close All");
 }
 
-// Close All Open Windows
-run("Close All");
+
 
 // Close Additional Windows if Open
 if (isOpen("Results")) {
