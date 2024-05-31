@@ -78,6 +78,11 @@ Command to concatenate two or more videos with ffmpeg
 
 -- First we create a list of files using the following command:
 (echo file 'first file.mp4' & echo file 'second file.mp4' )>list.txt
+or create it manually to this format:
+
+file 'first file.mp4'
+file 'second file.mp4'
+etc...
 
 -- Then we concatenate the files using the following command:
 ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4
