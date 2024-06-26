@@ -45,7 +45,7 @@ for (i = 0; i < qtd; i++) {
     selectWindow(list_open_windows[0]);
     run("Maximize");
     setTool("multipoint");
-    waitForUser("Please selec the region of interest and press OK when you're done");
+    waitForUser("Please select the region of interest and press OK when you're done");
     run("Measure");
     selectWindow("Results");
     saveAs("Results", dir + nome_atual + "_coordinates.csv");
