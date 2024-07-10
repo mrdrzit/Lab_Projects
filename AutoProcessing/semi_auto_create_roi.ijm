@@ -44,29 +44,83 @@ for (i = 0; i < qtd; i++) {
 
     selectWindow(list_open_windows[0]);
     run("Maximize");
-    setTool("multipoint");
-    waitForUser("Please select the region of interest and press OK when you're done");
-    run("Measure");
-    selectWindow("Results");
-    saveAs("Results", dir + nome_atual + "_coordinates.csv");
-    saveAs("Selection", dir + nome_atual + "_coordinates.roi");
-    // Close everything and sets the polygon tool to go to the next image
-    if (isOpen("Results")){
+    setTool("oval");
+	if (isOpen("Results")){
         selectWindow("Results"); 
         run("Close");
     }
-    if (isOpen("Log")){
-    selectWindow("Log");
-    run("Close");
-    }
-    if (isOpen("ROI Manager")){
-    selectWindow("ROI Manager");
-    run("Close");
-    }
-    while (nImages()>0){
-    selectImage(nImages());  
-    run("Close");
-    }
+	waitForUser("Please select the region of interest and press OK when you're done.\nProgress = " + atual + "/" + qtd);
+    run("Measure");
+	if (getValue("results.count") == 1){
+		img_width = getWidth();
+		img_height = getHeight();
+		measured_width = getResult("Width", 0);
+		measured_height = getResult("Height", 0);
+	}else{
+		selectWindow("Results"); 
+		run("Close");
+		img_width = getWidth();
+		img_height = getHeight();
+		measured_width = getResult("Width", 0);
+		measured_height = getResult("Height", 0);
+	}
+	equal_dimensions = 0;
+	if ((Math.ceil(measured_width) == Math.ceil(img_width)) && (Math.ceil(measured_height) == Math.ceil(img_height))){
+		equal_dimensions = getBoolean("You did not create any ROI\nIf this was intended, just press Yes\nElse, press No and proceed with ROI creation");
+	}
+	if (equal_dimensions){
+		// Close everything and sets the polygon tool to go to the next image
+		if (isOpen("Results")){
+			selectWindow("Results"); 
+			run("Close");
+		}
+		if (isOpen("Log")){
+		selectWindow("Log");
+		run("Close");
+		}
+		if (isOpen("ROI Manager")){
+		selectWindow("ROI Manager");
+		run("Close");
+		}
+		while (nImages()>0){
+		selectImage(nImages());  
+		run("Close");
+		}
+		continue
+	}else{
+		selectWindow(list_open_windows[0]);
+		run("Maximize");
+		setTool("oval");
+		if (isOpen("Results")){
+			selectWindow("Results"); 
+			run("Close");
+		}
+		if ((Math.ceil(measured_width) == Math.ceil(img_width)) && (Math.ceil(measured_height) == Math.ceil(img_height))){
+			waitForUser("Please select the region of interest and press OK when you're done.\nProgress = " + atual + "/" + qtd);
+		}
+		run("Measure");
+		selectWindow("Results");	
+		saveAs("Results", dir + nome_atual + "_roi.csv");
+		saveAs("Selection", dir + nome_atual + "_roi.roi");
+		// Close everything and sets the polygon tool to go to the next image
+		if (isOpen("Results")){
+			selectWindow("Results"); 
+			run("Close");
+		}
+		if (isOpen("Log")){
+		selectWindow("Log");
+		run("Close");
+		}
+		if (isOpen("ROI Manager")){
+		selectWindow("ROI Manager");
+		run("Close");
+		}
+		while (nImages()>0){
+		selectImage(nImages());  
+		run("Close");
+		}
+	}
 }
 
+waitForUser("Done!\n =]");
 // Listening to: Let Down - Pedro the lion
