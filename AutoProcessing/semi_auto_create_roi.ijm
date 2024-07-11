@@ -16,6 +16,13 @@ function listFiles(dir) {
 
 run("Close All");
 
+Dialog.create("Dialog to create a suffix for the ROIs");
+Dialog.addMessage("Type a phrase to be the suffix of the saved ROIs. For example: '\_border\_roi'");
+Dialog.addString("Suffix:", "_roi", 15)
+Dialog.addMessage("Note:\nThis script only works for saving ONE roi.\nI.e.: It only works for social recognition\nor for cases when you only need one roi file only.", 9, "#ff0000");
+Dialog.show();
+suffix = Dialog.getString();
+
 dir = getDirectory("Where are your photos?");
 output = dir;
 
@@ -100,8 +107,8 @@ for (i = 0; i < qtd; i++) {
 		}
 		run("Measure");
 		selectWindow("Results");	
-		saveAs("Results", dir + nome_atual + "_roi.csv");
-		saveAs("Selection", dir + nome_atual + "_roi.roi");
+		saveAs("Results", dir + nome_atual + suffix + ".csv");
+		saveAs("Selection", dir + nome_atual + suffix + ".roi");
 		// Close everything and sets the polygon tool to go to the next image
 		if (isOpen("Results")){
 			selectWindow("Results"); 
