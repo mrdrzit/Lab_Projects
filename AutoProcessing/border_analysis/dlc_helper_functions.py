@@ -7,7 +7,6 @@ import pandas as pd
 import skimage
 import matplotlib.pyplot as plt
 import shapely
-import traceback
 import matplotlib
 from tqdm import tqdm
 from pathlib import Path
@@ -500,23 +499,3 @@ def run_analysis(self, text_signal=None, progress=None):
             progress.emit(round(((i + 1) / len(folders_to_process)) * 100))
     text_signal.emit((f"All folders have been processed."))
     print("All folders have been processed.")
-
-def warning_message_function(title, text):
-    warning = QMessageBox()  # Create the message box
-    warning.setWindowTitle(title)  # Message box title
-    warning.setText(text)  # Message box text
-    warning.setIcon(QMessageBox.Icon.Warning)  # Message box icon
-    warning.setStyleSheet(
-        "QMessageBox{background:#353535;}QLabel{font:10pt/DejaVu Sans/;"
-        + "font-weight:bold;color:#FFFFFF;}QPushButton{width:52px; border:2px solid #A21F27;border-radius:8px;"
-        + "background-color:#2C53A1;color:#FFFFFF;font:10pt/DejaVu Sans/;"
-        + "font-weight:bold;}QPushButton:pressed{border:2px solid #A21F27;"
-        + "border-radius:8px;background-color:#A21F27;color:#FFFFFF;}"
-    )
-    warning.setStandardButtons(QMessageBox.StandardButton.Ok)  # Message box buttons
-    warning.exec()
-
-def on_worker_finished():
-    text = "Analysis completed successfully."
-    title = "Analysis completed"
-    warning_message_function(title, text)
