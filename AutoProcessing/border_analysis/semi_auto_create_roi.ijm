@@ -51,16 +51,13 @@ for (i = 0; i < qtd; i++) {
 	final_txt_name = dir + nome_atual + suffix + ".txt";
 	final_csv_name = dir + nome_atual + suffix + ".csv";
 
-	if (suffix_lower == "_border_roi"){
-		if (File.exists(final_txt_name)){
-			print("The rois for " + nome_atual + " already exist. Skipping to the next image.");
-			continue;
-		}
-	}else if (suffix_lower == "_roi"){
-		if (File.exists(final_roi_name) && File.exists(final_csv_name)){
-			print("The rois for " + nome_atual + " already exist. Skipping to the next image.");
-			continue;
-		}
+	if (File.exists(final_txt_name)){
+		print("The rois for " + nome_atual + " already exist. Skipping to the next image.");
+		continue;
+	}
+	if (File.exists(final_roi_name) && File.exists(final_csv_name)){
+		print("The rois for " + nome_atual + " already exist. Skipping to the next image.");
+		continue;
 	}
 
 	// waitForUser("Please select the region of interest and press OK when you're done.\nProgress = " + atual + "/" + qtd);
@@ -87,6 +84,7 @@ for (i = 0; i < qtd; i++) {
 	is_arbitrary_roi = Dialog.getCheckbox();
 	if (is_arbitrary_roi){
 		saveAs("XY Coordinates", dir + nome_atual + suffix + ".txt");
+		saveAs("Selection", dir + nome_atual + suffix + ".roi");
 		if (isOpen("Results")){
 			selectWindow("Results"); 
 			run("Close");
