@@ -188,6 +188,135 @@ for (i = 0; i < qtd; i++) {
   run("Close All");
 }
 
+// -------- Now copy the images to separate folders and stitch them together --------
+
+// Get a list of all neun and cfos images in the folder
+list_files = getFileList(dir);
+left_neun_images = newArray();
+left_cfos_images = newArray();
+left_dapi_images = newArray();
+left_triple_images = newArray();
+
+right_neun_images = newArray();
+right_cfos_images = newArray();
+right_dapi_images = newArray();
+right_triple_images = newArray();
+
+// Copy the left hemisphere images to the respective directories
+for(i = 0; i < list_files.length; i++){
+  if (endsWith(list_files[i], "/")){
+    continue;
+  }else if (indexOf(list_files[i], "MAX_PROJECTION_neun.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_E_") >= 0){
+      left_neun_images = Array.concat(left_neun_images, list_files[i]);
+  }else if (indexOf(list_files[i], "MAX_PROJECTION_cfos.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_E_") >= 0){
+      left_cfos_images = Array.concat(left_cfos_images, list_files[i]);
+  }else if (indexOf(list_files[i], "MAX_PROJECTION_dapi.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_E_") >= 0){
+      left_dapi_images = Array.concat(left_dapi_images, list_files[i]);
+  }else if (indexOf(list_files[i], "MERGE_dapi_neun_cfos.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_E_") >= 0){
+      left_triple_images = Array.concat(left_triple_images, list_files[i]);
+  }
+}
+
+
+// Copy the right hemisphere images to the respective directories
+for(i = 0; i < list_files.length; i++){
+  if (endsWith(list_files[i], "/")){
+    continue;
+  }else if (indexOf(list_files[i], "MAX_PROJECTION_neun.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_D_") >= 0){
+      right_neun_images = Array.concat(right_neun_images, list_files[i]);
+  }else if (indexOf(list_files[i], "MAX_PROJECTION_cfos.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_D_") >= 0){
+      right_cfos_images = Array.concat(right_cfos_images, list_files[i]);
+  }else if (indexOf(list_files[i], "MAX_PROJECTION_dapi.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_D_") >= 0){
+      right_dapi_images = Array.concat(right_dapi_images, list_files[i]);
+  }else if (indexOf(list_files[i], "MERGE_dapi_neun_cfos.png") >= 0 && list_files[i].endsWith(".png") && indexOf(list_files[i], "_D_") >= 0){
+      right_triple_images = Array.concat(right_triple_images, list_files[i]);
+  }
+}
+
+// Check if there is a directory for each type of image
+left_hemisphere = dir + File.separator + "left_hemisphere";
+right_hemisphere = dir + File.separator + "right_hemisphere";
+
+name_to_save_left_neun = substring(left_neun_images[0], 0, (left_neun_images[0].length) - 4);
+name_to_save_left_cfos = substring(left_cfos_images[0], 0, (left_cfos_images[0].length) - 4);
+name_to_save_left_dapi = substring(left_dapi_images[0], 0, (left_dapi_images[0].length) - 4);
+name_to_save_left_triple = substring(left_triple_images[0], 0, (left_triple_images[0].length) - 4);
+
+name_to_save_right_neun = substring(right_neun_images[0], 0, (right_neun_images[0].length) - 4);
+name_to_save_right_cfos = substring(right_cfos_images[0], 0, (right_cfos_images[0].length) - 4);
+name_to_save_right_dapi = substring(right_dapi_images[0], 0, (right_dapi_images[0].length) - 4);
+name_to_save_right_triple = substring(right_triple_images[0], 0, (right_triple_images[0].length) - 4);
+
+// Check if the directories exist, if not, create them
+left_hemisphere_folder = false;
+right_hemisphere_folder = false;
+
+if (!File.isDirectory(left_hemisphere_folder)){
+    File.makeDirectory(left_hemisphere_folder)
+}else{
+  left_hemisphere_folder = true;
+}
+if (!File.isDirectory(right_hemisphere_folder)){
+    File.makeDirectory(right_hemisphere_folder)
+}else{
+  right_hemisphere_folder = true;
+}
+
+// Use the folder boolean to check if the folder already exists and exit if any of them does, informing which ones
+if (left_hemisphere_folder || right_hemisphere_folder){
+  message = "The following folders already exist:\n";
+  if (left_hemisphere_folder){
+    message = message + "left_hemisphere\n";
+  }
+  if (right_hemisphere_folder){
+    message = message + "right_hemisphere\n";
+  }
+  exit(message + "\nPlease, delete them, and run the script again\nTo avoid errors, leave only .zvi files in the folder");
+}
+
+// Concatenate all the left images
+left_images = Array.concat(left_neun_images, left_cfos_images, left_dapi_images, left_triple_images);
+right_images = Array.concat(right_neun_images, right_cfos_images, right_dapi_images, right_triple_images);
+
+// Copy the left images to the respective directories
+for (i = 0; i < left_images.length; i++){
+    File.copy(dir + File.separator + left_images[i], left_hemisphere_folder + File.separator + left_images[i]);
+}
+
+// Copy the right images to the respective directories
+for (i = 0; i < right_images.length; i++){
+    File.copy(dir + File.separator + right_images[i], right_hemisphere_folder + File.separator + right_images[i]);
+}
+
+
+// Stitch the neun images
+run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=[" + neun_temp_path + "] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.50 max/avg_displacement_threshold=2 absolute_displacement_threshold=3.00 computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");
+selectWindow("Fused");
+full_file_path_to_save_neun = neun_temp_path + File.separator + name_to_save_neun + "_panorama.tif";
+saveAs("PNG", full_file_path_to_save_neun);
+close();
+
+// Stitch the cfos images
+run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=[" + cfos_temp_path + "] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.80 max/avg_displacement_threshold=2 absolute_displacement_threshold=3.00 computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");
+selectWindow("Fused");
+full_file_path_to_save_cfos = cfos_temp_path + File.separator + name_to_save_cfos + "_panorama.tif";
+saveAs("PNG", full_file_path_to_save_cfos);
+close();
+
+// Stitch the dapi images
+run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=[" + dapi_temp_path + "] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.80 max/avg_displacement_threshold=2 absolute_displacement_threshold=3.00 computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");
+selectWindow("Fused");
+full_file_path_to_save_dapi = dapi_temp_path + File.separator + name_to_save_dapi + "_panorama.tif";
+saveAs("PNG", full_file_path_to_save_dapi);
+close();
+
+// Stitch the triple images
+run("Grid/Collection stitching", "type=[Unknown position] order=[All files in directory] directory=[" + triple_temp_path + "] output_textfile_name=TileConfiguration.txt fusion_method=[Linear Blending] regression_threshold=0.80 max/avg_displacement_threshold=2 absolute_displacement_threshold=3.00 computation_parameters=[Save computation time (but use more RAM)] image_output=[Fuse and display]");
+selectWindow("Fused");
+full_file_path_to_save_triple = triple_temp_path + File.separator + name_to_save_triple + "_panorama.tif";
+saveAs("PNG", full_file_path_to_save_triple);
+close();
+
 
 waitForUser("All done! :)");
 

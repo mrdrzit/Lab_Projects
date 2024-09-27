@@ -38,6 +38,7 @@ for(i = 0; i < list_files.length; i++){
       triple_images = Array.concat(triple_images, list_files[i]);
   }
 }
+
 // Check if there is a directory for each type of image
 neun_temp_path = dir + File.separator + "neun";
 cfos_temp_path = dir + File.separator + "cfos";
