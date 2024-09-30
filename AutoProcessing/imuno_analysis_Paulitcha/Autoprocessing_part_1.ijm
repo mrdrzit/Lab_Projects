@@ -94,7 +94,12 @@ for (i = 0; i < qtd; i++) {
   current_image = dir + list_file_names[i];
   name_to_save = File.getNameWithoutExtension(list_file_names[i]);
   open(current_image);
-  
+  opened_incorrectly = is("composite");
+  if (opened_incorrectly) {
+    waitForUser("The image " + current_image + " was not opened correctly\nProbably the stack wasn't divided into separate filters. Please, check the bio-formats configuration and re-run the script");
+    run("Close All");
+    exit();
+  }
   // ----------- Block of code to remove the first and last n images from the z-stack -----------------
 
   // get the number of slices in the stack
@@ -448,6 +453,12 @@ if (left_hemisphere_analysis){
   }else{
     File.copy(left_hemisphere_folder_cfos + "/" + name_to_save_left_cfos + "_panorama.png", left_hemisphere_analysis_dir + "/" + name_to_save_left_cfos + "_panorama.png");
   }
+
+  if (!File.exists(left_hemisphere_folder_triple + "/" + name_to_save_left_triple + "_panorama.png")){
+    waitForUser("The left hemisphere panorama for the triple could not be found\nPlease, create them manually before continuing\nPress OK to continue");
+  }else{
+    File.copy(left_hemisphere_folder_triple + "/" + name_to_save_left_triple + "_panorama.png", left_hemisphere_analysis_dir + "/" + name_to_save_left_triple + "_panorama.png");
+  }
 }
 
 if (right_hemisphere_analysis){
@@ -463,7 +474,13 @@ if (right_hemisphere_analysis){
     waitForUser("The right hemisphere panorama for CFOS could not be found\nPlease, create them manually before continuing\nPress OK to continue");
   }else{
     File.copy(right_hemisphere_folder_cfos + "/" + name_to_save_right_cfos + "_panorama.png", right_hemisphere_analysis_dir + "/" + name_to_save_right_cfos + "_panorama.png");
-  }  
+  }
+
+  if (!File.exists(right_hemisphere_folder_triple + "/" + name_to_save_right_triple + "_panorama.png")){
+    waitForUser("The right hemisphere panorama for the triple could not be found\nPlease, create them manually before continuing\nPress OK to continue");
+  }else{
+    File.copy(right_hemisphere_folder_triple + "/" + name_to_save_right_triple + "_panorama.png", right_hemisphere_analysis_dir + "/" + name_to_save_right_triple + "_panorama.png");
+  }
 }
 
 waitForUser("All done! :)\n Now you can analyze each hemisphere separately using the second part of the script\nMake sure that the cfos and neun's panoramas are in each respective analysis directory\nPress OK to finish the script");
