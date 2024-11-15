@@ -1,14 +1,7 @@
 import pickle
 import os
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import scipy.stats as stats
-from pathlib import Path
-from tkinter import filedialog
-from matplotlib import colors as mcolors
-from dlc_helper_functions import *
 from helper_functions import *
 
 # Set the path to the data folder and the pre-processed data file
