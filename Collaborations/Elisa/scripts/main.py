@@ -4,14 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import seaborn as sns
-import scipy.stats as stats
+from matplotlib.ticker import MultipleLocator
 from helper_functions import *
+from scipy.interpolate import make_interp_spline
 
 # Set the path to the data folder and the pre-processed data file
 data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))
 figures_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'figures'))
 pre_processed_data = os.path.join(data_folder, 'animals_data_elisa.pkl')
-
 
 # Load the animals data from the pickle file
 with open(pre_processed_data, 'rb') as file:
@@ -56,27 +56,15 @@ for array in animals_data["reativacao"].values():
 for array in animals_data["teste"].values():
     TT_durations.extend(array)
 
-# Create histograms for each session
-TR_binned = np.histogram(TR_durations, bins=bins)[0]
-RE_binned = np.histogram(RE_durations, bins=bins)[0]
-TT_binned = np.histogram(TT_durations, bins=bins)[0]
+# # Cumulative distribution using seaborn
+# sns.kdeplot(TR_durations, color=TR_color, cumulative=True, alpha=0.8, linewidth=2, bw_adjust=1.6, clip=(0, 20))
+# sns.kdeplot(RE_durations, color=RE_color, cumulative=True, alpha=0.8, linewidth=2, bw_adjust=1.6, clip=(0, 20))
+# sns.kdeplot(TT_durations, color=TT_color, cumulative=True, alpha=0.8, linewidth=2, bw_adjust=1.6, clip=(0, 20))
 
 # Calculate the cumulative distribution function for each session
 values_TR, cdf_TR = cumulative_distribution(TR_durations)
 values_RE, cdf_RE = cumulative_distribution(RE_durations)
 values_TT, cdf_TT = cumulative_distribution(TT_durations)
-
-# Plot the cdfs for each session
-fig, ax = plt.subplots(figsize=(15, 8))
-plt.plot(values_TR, cdf_TR, label="TR", color=TR_color)
-plt.plot(values_RE, cdf_RE, label="RE", color=RE_color)
-plt.plot(values_TT, cdf_TT, label="TT", color=TT_color)
-plt.legend()
-plt.xlabel('Duration (s)', fontsize=12)
-plt.ylabel('Cumulative Probability', fontsize=12)
-plt.grid()
-plt.title('Bout Durations for every animal in each session (TR, RE, TT)')
-plt.tight_layout()
 
 # Find the maximum length
 max_len = max(len(TR_durations), len(RE_durations), len(TT_durations))
@@ -92,87 +80,262 @@ data_dataframe["TR"] = data_dataframe["TR"]
 data_dataframe["RE"] = data_dataframe["RE"]
 data_dataframe["TT"] = data_dataframe["TT"]
 
-kernel_tr = stats.gaussian_kde(data_dataframe["TR"])
-kernel_re = stats.gaussian_kde(data_dataframe["RE"])
-kernel_tt = stats.gaussian_kde(data_dataframe["TT"])
-
-kt = kernel_tr.pdf(data_dataframe["TR"])
-
-# Plot the kde for each session
+# Plot the cdfs for each session ---------------------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(15, 8))
-ax.plot(kt, range(len(kt)), label="TR", color=TR_color)
-
-fig, ax = plt.subplots(figsize=(15, 8))
-sns.kdeplot(
-    data=data_dataframe,
-    ax=ax,
-    palette=[TR_color, RE_color, TT_color],
-    fill=True,
-    alpha=0.8,
-    linewidth=0.5,
-    multiple="stack",
-    edgecolor="white",
-)
-ax.set_xlabel("Duration (s)", fontsize=12)
-ax.set_ylabel("Density", fontsize=12)
-ax.set_title("Normalized KDE for Bout Durations (TR, RE, TT)", fontsize=14)
-plt.tight_layout()
-
-# Add legend
-ax.legend()
-
-fig, axes = plt.subplots(1, 3, sharex=True, sharey=True, figsize=(15, 8))
-axes[0].hist(TR_durations, bins=bins, color=TR_color, alpha=0.7, label='TR')
-axes[1].hist(RE_durations, bins=bins, color=RE_color, alpha=0.7, label='RE')
-axes[2].hist(TT_durations, bins=bins, color=TT_color, alpha=0.7, label='TT')
-
-axes[0].axvline(np.mean(TR_durations), color='k', linestyle='dashed', linewidth=1, label='TR Mean')
-axes[1].axvline(np.mean(RE_durations), color='k', linestyle='dashed', linewidth=1, label='RE Mean')
-axes[2].axvline(np.mean(TT_durations), color='k', linestyle='dashed', linewidth=1, label='TT Mean')
-for ax in axes:
-    ax.legend()
-    ax.set_xlabel('Duration (s)')
-    ax.set_ylabel('Frequency')
-    ax.grid()
-
-plt.title('Bout Durations for every animal in each session (TR, RE, TT)')
-plt.tight_layout()
-
-# plt.hist(TR_durations, bins=bins, density=True, color=TR_color, alpha=0.1, label='TR')
-# plt.hist(RE_durations, bins=bins, density=True, color=RE_color, alpha=0.1, label='RE')
-# plt.hist(TT_durations, bins=bins, density=True, color=TT_color, alpha=0.1, label='TT')
-# plt.legend()
-# plt.xlabel('Duration (s)')
-# plt.ylabel('Frequency')
-# plt.title('Bout Durations')
-
-# Find bin centers
-# This is used to set where the plot bars will be placed. 
-# That is, for them to be evenly spaced between the bin edges
-bin_centers = (bins[:-1] + bins[1:]) / 2
-
-# Plot the maximum values as a line
-fig, ax = plt.subplots()
-plt.plot(bin_centers, TR_binned, "--", linewidth=1, label="TR", color=TR_color, alpha=0.9)
-plt.plot(bin_centers, RE_binned, "--", linewidth=1, label="RE", color=RE_color, alpha=0.9)
-plt.plot(bin_centers, TT_binned, "--", linewidth=1, label="TT", color=TT_color, alpha=0.9)
+plt.plot(values_TR, cdf_TR, label="TR", color=TR_color, drawstyle='steps-post')
+plt.plot(values_RE, cdf_RE, label="RE", color=RE_color, drawstyle='steps-post')
+plt.plot(values_TT, cdf_TT, label="TT", color=TT_color, drawstyle='steps-post')
 plt.legend()
-plt.xlabel('Duration (s)')
-plt.ylabel('Frequency')
-plt.title('Bout Durations')
+plt.xlabel('Duration (s)', fontsize=12)
+plt.ylabel('Cumulative Probability', fontsize=12)
+plt.grid()
+plt.title('Cumulative distribution function for every animal in each session (TR, RE, TT)')
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(figures_folder, 'Cumulative distribution function for every animal in each session (TR, RE, TT).png'))
+plt.close("all")
+print("CDFs plotted successfully!")
 
-# Plot the cdfs for each animal through the experiment days
+# Plot the cdfs for each animal through the experiment days -------------------------------------------------------------
 for animal in range(len(paired_data)):
     fig, ax = plt.subplots(figsize=(15, 8))
-    plt.plot(paired_cdf[animal][0][0], paired_cdf[animal][0][1], label="TR", color=TR_color)
-    plt.plot(paired_cdf[animal][1][0], paired_cdf[animal][1][1], label="RE", color=RE_color)
-    plt.plot(paired_cdf[animal][2][0], paired_cdf[animal][2][1], label="TT", color=TT_color)
+    plot_name = f'Cumulative Distribution Function for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")} in each session'
+    plt.plot(paired_cdf[animal][0][0], paired_cdf[animal][0][1], label="TR", color=TR_color, drawstyle='steps-post')
+    plt.plot(paired_cdf[animal][1][0], paired_cdf[animal][1][1], label="RE", color=RE_color, drawstyle='steps-post')
+    plt.plot(paired_cdf[animal][2][0], paired_cdf[animal][2][1], label="TT", color=TT_color, drawstyle='steps-post')
     plt.legend()
     plt.xlabel('Duration (s)', fontsize=12)
     plt.ylabel('Cumulative Probability', fontsize=12)
     plt.grid()
-    plt.title(f'Cumulative Distribution Function for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")} in each session')
+    plt.title(plot_name)
     plt.tight_layout()
-    plt.savefig(os.path.join(figures_folder, f'animal_{list(animals_data["treino"].keys())[animal].replace("TR", "")}_cdfs.png'))
+    plt.savefig(os.path.join(figures_folder, plot_name))
+plt.close("all")
+print("Animal CDFs plotted successfully!")
+
+# Plot the histograms, kdes and superimposed cdfs for each session ------------------------------------------------------
+fig, axes = plt.subplots(3, 3, sharex=True, sharey=True, figsize=(15, 8))
+
+# PLot histograms on the first row
+axes[0][0].hist(TR_durations, bins=bins, density=True, color=TR_color, alpha=0.7, label='TR')
+axes[0][1].hist(RE_durations, bins=bins, density=True, color=RE_color, alpha=0.7, label='RE')
+axes[0][2].hist(TT_durations, bins=bins, density=True, color=TT_color, alpha=0.7, label='TT')
+axes[0][0].axvline(np.mean(TR_durations), color='k', linestyle='dashed', linewidth=1, label=f'TR Mean ({np.mean(TR_durations):.3f}s)')
+axes[0][1].axvline(np.mean(RE_durations), color='k', linestyle='dashed', linewidth=1, label=f'RE Mean ({np.mean(RE_durations):.3f}s)')
+axes[0][2].axvline(np.mean(TT_durations), color='k', linestyle='dashed', linewidth=1, label=f'TT Mean ({np.mean(TT_durations):.3f}s)')
+
+# Plot the kdes in the second row
+sns.kdeplot(data=data_dataframe['TR'], ax=axes[1][0], color=TR_color, fill=True, alpha=0.8, linewidth=2, multiple='stack', edgecolor='white', bw_adjust=1.6, clip=(0, 20))
+sns.kdeplot(data=data_dataframe['RE'], ax=axes[1][1], color=RE_color, fill=True, alpha=0.8, linewidth=2, multiple='stack', edgecolor='white', bw_adjust=1.6, clip=(0, 20))
+sns.kdeplot(data=data_dataframe['TT'], ax=axes[1][2], color=TT_color, fill=True, alpha=0.8, linewidth=2, multiple='stack', edgecolor='white', bw_adjust=1.6, clip=(0, 20))
+
+# Plot the kdes overlapping the histograms in the third row
+axes[2][0].hist(TR_durations, bins=bins, density=True, color=TR_color, alpha=0.7, label='TR')
+axes[2][1].hist(RE_durations, bins=bins, density=True, color=RE_color, alpha=0.7, label='RE')
+axes[2][2].hist(TT_durations, bins=bins, density=True, color=TT_color, alpha=0.7, label='TT')
+sns.kdeplot(data=data_dataframe['TR'], ax=axes[2][0], color="black", fill=False, alpha=0.8, linewidth=2, linestyle='-', bw_adjust=1.6, clip=(0, 20))
+sns.kdeplot(data=data_dataframe['RE'], ax=axes[2][1], color="black", fill=False, alpha=0.8, linewidth=2, linestyle='-', bw_adjust=1.6, clip=(0, 20))
+sns.kdeplot(data=data_dataframe['TT'], ax=axes[2][2], color="black", fill=False, alpha=0.8, linewidth=2, linestyle='-', bw_adjust=1.6, clip=(0, 20))
+
+for ax in axes[0].flatten():
+    ax.legend()
+    ax.set_ylabel('Frequency')
+    ax.grid()
+
+for ax in axes[1].flatten():
+    ax.set_ylabel('Kernel Density Estimate')
+    ax.grid()
+
+for ax in axes[2].flatten():
+    ax.set_xlabel('Duration (s)')
+    ax.set_ylabel('KDE and Frequency')
+    ax.grid()
+
+fig.suptitle('Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT)', fontsize=14)
+plt.xlim(0, 20)
+plt.tight_layout()
+plt.savefig(os.path.join(figures_folder, 'Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT).png'))
+plt.close("all")
+print("Histograms, KDEs and superimposed CDFs plotted successfully!")
+
+# Plot the histograms, kdes and superimposed cdfs for each animal --------------------------------------------------------
+for animal in range(len(paired_data)):
+    animal_mean_tr = np.mean(paired_data[animal][0])
+    animal_mean_re = np.mean(paired_data[animal][1])
+    animal_mean_tt = np.mean(paired_data[animal][2])
+
+    fig, axes = plt.subplots(3, 3, sharex=True, sharey=True, figsize=(15, 8))
+
+    # PLot histograms on the first row
+    axes[0][0].hist(paired_data[animal][0], bins=bins, density=True, color=TR_color, alpha=0.7, label='TR')
+    axes[0][1].hist(paired_data[animal][1], bins=bins, density=True, color=RE_color, alpha=0.7, label='RE')
+    axes[0][2].hist(paired_data[animal][2], bins=bins, density=True, color=TT_color, alpha=0.7, label='TT')
+    axes[0][0].axvline(animal_mean_tr, color='k', linestyle='dashed', linewidth=1, label=f'TR Mean ({animal_mean_tr:.3f}s)')
+    axes[0][1].axvline(animal_mean_re, color='k', linestyle='dashed', linewidth=1, label=f'RE Mean ({animal_mean_re:.3f}s)')
+    axes[0][2].axvline(animal_mean_tt, color='k', linestyle='dashed', linewidth=1, label=f'TT Mean ({animal_mean_tt:.3f}s)')
+
+    # Plot the kdes in the second row
+    sns.kdeplot(data=paired_data[animal][0], ax=axes[1][0], color=TR_color, fill=True, alpha=0.8, linewidth=2, multiple='stack', edgecolor='white', bw_adjust=.6, clip=(0, 20))
+    sns.kdeplot(data=paired_data[animal][1], ax=axes[1][1], color=RE_color, fill=True, alpha=0.8, linewidth=2, multiple='stack', edgecolor='white', bw_adjust=.6, clip=(0, 20))
+    sns.kdeplot(data=paired_data[animal][2], ax=axes[1][2], color=TT_color, fill=True, alpha=0.8, linewidth=2, multiple='stack', edgecolor='white', bw_adjust=.6, clip=(0, 20))
+
+    # Plot the kdes overlapping the histograms in the third row
+    axes[2][0].hist(paired_data[animal][0], bins=bins, density=True, color=TR_color, alpha=0.7, label='TR')
+    axes[2][1].hist(paired_data[animal][1], bins=bins, density=True, color=RE_color, alpha=0.7, label='RE')
+    axes[2][2].hist(paired_data[animal][2], bins=bins, density=True, color=TT_color, alpha=0.7, label='TT')
+
+    sns.kdeplot(data=paired_data[animal][0], ax=axes[2][0], color="black", fill=False, alpha=0.8, linewidth=1.4, linestyle='-', bw_adjust=.6, clip=(0, 20))
+    sns.kdeplot(data=paired_data[animal][1], ax=axes[2][1], color="black", fill=False, alpha=0.8, linewidth=1.4, linestyle='-', bw_adjust=.6, clip=(0, 20))
+    sns.kdeplot(data=paired_data[animal][2], ax=axes[2][2], color="black", fill=False, alpha=0.8, linewidth=1.4, linestyle='-', bw_adjust=.6, clip=(0, 20))
+
+    for ax in axes[0].flatten():
+        ax.legend()
+        ax.set_ylabel('Frequency')
+        ax.grid()
+
+    for ax in axes[1].flatten():
+        ax.set_ylabel('Kernel Density Estimate')
+        ax.grid()
+    
+    for ax in axes[2].flatten():
+        ax.set_xlabel('Duration (s)')
+        ax.set_ylabel('KDE and Frequency')
+        ax.grid()
+    
+    fig.suptitle(f'Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT) for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")}', fontsize=14)
+    plt.xlim(0, 20)
+    plt.ylim(0, 1)
+    plt.tight_layout()
+    plt.savefig(os.path.join(figures_folder, f'Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT) for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")}'))
+    plt.close("all")
+    print(f"Animal {list(animals_data['treino'].keys())[animal].replace('TR', '')} plotted successfully!")
+
+# Plot the bout durations as a line plot for the whole experiment ------------------------------------------------------
+
+TR_binned, TR_bins = np.histogram(TR_durations, bins=bins)
+RE_binned, RE_bins = np.histogram(RE_durations, bins=bins)
+TT_binned, TT_bins = np.histogram(TT_durations, bins=bins)
+
+bin_centers = (bins[:-1] + bins[1:]) / 2
+
+### UNCOMMENT THIS TO PLOT THE EXPLORATION BOUTS WITHOUT THE SMOOTHING
+fig, ax = plt.subplots(figsize=(15, 8))
+plt.plot(bin_centers, TR_binned, "-", linewidth=1.4, label="TR", color=TR_color)
+plt.plot(bin_centers, RE_binned, "-", linewidth=1.4, label="RE", color=RE_color)
+plt.plot(bin_centers, TT_binned, "-", linewidth=1.4, label="TT", color=TT_color)
+plt.xlim(0, 10)
+plt.legend()
+plt.xlabel('Duration (s)')
+plt.ylabel('Frequency')
+plt.title('Bout Durations for each session (TR, RE, TT) - Unsmoothed')
+plt.tight_layout()
+plt.savefig(os.path.join(figures_folder, 'Bout Durations for each session (TR, RE, TT) - Unsmoothed.png'))
+plt.close("all")
+print("Unsmoothed bout durations plotted successfully!")
+
+# Interpolate the lines for smoother decay
+TR_spline = make_interp_spline(bin_centers, TR_binned, k=3)
+RE_spline = make_interp_spline(bin_centers, RE_binned, k=3)
+TT_spline = make_interp_spline(bin_centers, TT_binned, k=3)
+
+# Generate new x values for smooth curves
+x_smooth = np.linspace(bin_centers.min(), bin_centers.max(), 300)
+TR_smooth = TR_spline(x_smooth)
+RE_smooth = RE_spline(x_smooth)
+TT_smooth = TT_spline(x_smooth)
+
+# Plot the smoothed lines
+fig, ax = plt.subplots(figsize=(15, 8))
+plt.plot(x_smooth, TR_smooth, "-", linewidth=1.1, label="TR", color=TR_color)
+plt.plot(x_smooth, RE_smooth, "-", linewidth=1.1, label="RE", color=RE_color)
+plt.plot(x_smooth, TT_smooth, "-", linewidth=1.1, label="TT", color=TT_color)
+plt.xlim(0, 10)
+plt.legend()
+plt.xlabel('Duration (s)')
+plt.ylabel('Frequency')
+plt.title('Bout Durations for each session (TR, RE, TT) - Smoothed')
+plt.tight_layout()
+plt.savefig(os.path.join(figures_folder, 'Bout Durations for each session (TR, RE, TT) - Smoothed.png'))
+plt.close("all")
+print("Smoothed bout durations plotted successfully!")
+
+# Plot the bout durations as a line plot for each animal ----------------------------------------------------------------
+for animal in range(len(paired_data)):
+    TR_binned = paired_bins[animal][0]
+    RE_binned = paired_bins[animal][1]
+    TT_binned = paired_bins[animal][2]
+
+    bin_centers_bouts = (bins[:-1] + bins[1:]) / 2
+
+    # Interpolate the lines for smoother decay
+    TR_spline = make_interp_spline(bin_centers_bouts, TR_binned, k=3)
+    RE_spline = make_interp_spline(bin_centers_bouts, RE_binned, k=3)
+    TT_spline = make_interp_spline(bin_centers_bouts, TT_binned, k=3)
+
+    # Generate new x values for smooth curves
+    x_smooth = np.linspace(bin_centers_bouts.min(), bin_centers_bouts.max(), 200)
+    TR_smooth = TR_spline(x_smooth)
+    RE_smooth = RE_spline(x_smooth)
+    TT_smooth = TT_spline(x_smooth)
+
+    # Plot the smoothed lines
+    fig, ax = plt.subplots(figsize=(15, 8))
+    plt.plot(x_smooth, TR_smooth, "-", linewidth=1.1, label="TR", color=TR_color)
+    plt.plot(x_smooth, RE_smooth, "-", linewidth=1.1, label="RE", color=RE_color)
+    plt.plot(x_smooth, TT_smooth, "-", linewidth=1.1, label="TT", color=TT_color)
+    plt.xlim(0, 10)
+    ax.xaxis.set_major_locator(MultipleLocator(0.5))  # Major ticks every 1 unit (adjust if needed)
+    ax.tick_params(axis='x', which='both', direction='in', length=6)
+    plt.legend()
+    plt.xlabel('Duration (s)')
+    plt.ylabel('Frequency')
+    plt.title(f'Bout Durations for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")} (Smoothed)')
+    plt.tight_layout()
+    plt.close("all")
+    print(f"Animal {list(animals_data['treino'].keys())[animal].replace('TR', '')} plotted successfully!")
+
+# Plot the KDE for the whole experiment -----------------------------------------------------------------------------------
+fig, ax_kde = plt.subplots(figsize=(15, 8))
+sns.kdeplot(
+    data=data_dataframe,
+    palette=[TR_color, RE_color, TT_color],
+    fill=True,
+    alpha=0.8,
+    linewidth=.5,
+    multiple="stack",
+    edgecolor="white",
+    bw_adjust=1.6,
+    clip=(0, 20),
+)
+ax_kde.xaxis.set_major_locator(MultipleLocator(0.5))  # Major ticks every 1 unit (adjust if needed)
+ax_kde.tick_params(axis='x', which='both', direction='out', length=6)
+ax_kde.set_xlabel("Duration (s)", fontsize=12)
+ax_kde.set_ylabel("Density", fontsize=12)
+ax_kde.set_xlim(0, 15)
+ax_kde.set_title("Normalized KDE for Bout Duration histogram in each session (TR, RE, TT)", fontsize=14)
+plt.tight_layout()
+plt.savefig(os.path.join(figures_folder, 'Normalized KDE for Bout Duration histogram in each session (TR, RE, TT).png'))
+plt.close("all")
+print("KDE for the whole experiment plotted successfully!")
+
+# Plot the bout durations for the whole experiment ----------------------------------------------------------------
+multi_x = [TR_durations, RE_durations, TT_durations]
+fig, ax = plt.subplots(figsize=(15, 8))
+multi_x_bin_counts, multi_x_bins, _ = ax.hist(multi_x, bins=bins, color=[TR_color, RE_color, TT_color], alpha=0.9, label=['TR', 'RE', 'TT'])
+
+# Calculate bin centers
+multi_x_bin_centers_temp = (multi_x_bins[:-1] + multi_x_bins[1:]) / 2
+multi_x_bin_centers = np.insert(multi_x_bin_centers_temp, 0, 0)
+
+# Set custom x-ticks at bin centers
+bin_labels = [f"{x:.1f}" if x != 0 else None for x in bins]
+ax.set_xticks(multi_x_bin_centers, bin_labels)
+ax.set_xlim(0, 15)
+ax.set_xlabel('Duration (s)')
+ax.set_ylabel('Frequency')
+ax.set_title('Bout Duration histogram for each session stacked (TR, RE, TT)')
+ax.legend()
+ax.grid()
+plt.tight_layout()
+plt.savefig(os.path.join(figures_folder, 'Bout Duration histogram for each session stacked (TR, RE, TT).png'))
+plt.close("all")
+print("Bout Duration histogram for each session stacked (TR, RE, TT) plotted successfully!")
