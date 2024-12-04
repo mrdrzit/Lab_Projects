@@ -31,3 +31,13 @@ def cumulative_distribution(array):
     probabilities = counts / counts.sum()
     cdf = np.cumsum(probabilities)
     return values, cdf
+
+def cdf(sample, x, sort = False):
+    # Sorts the sample, if unsorted
+    if sort:
+        sample.sort()
+    # Counts how many observations are below x
+    cdf = sum(sample <= x)
+    # Divides by the total number of observations
+    cdf = cdf / len(sample)
+    return cdf

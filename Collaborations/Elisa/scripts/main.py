@@ -4,9 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import seaborn as sns
-from matplotlib.ticker import MultipleLocator
+import scipy.stats as stats
 from helper_functions import *
+from matplotlib.ticker import MultipleLocator
 from scipy.interpolate import make_interp_spline
+
+save_figures = False
+show_figures = False
 
 # Set the path to the data folder and the pre-processed data file
 data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data'))
@@ -91,9 +95,15 @@ plt.ylabel('Cumulative Probability', fontsize=12)
 plt.grid()
 plt.title('Cumulative distribution function for every animal in each session (TR, RE, TT)')
 plt.tight_layout()
-plt.savefig(os.path.join(figures_folder, 'Cumulative distribution function for every animal in each session (TR, RE, TT).png'))
+
+if save_figures:
+    plt.savefig(os.path.join(figures_folder, 'Cumulative distribution function for every animal in each session (TR, RE, TT).png'))
+    plt.close("all")
+    print("CDFs plotted successfully!")
+elif show_figures:
+    plt.show()
+    plt.close("all")
 plt.close("all")
-print("CDFs plotted successfully!")
 
 # Plot the cdfs for each animal through the experiment days -------------------------------------------------------------
 for animal in range(len(paired_data)):
@@ -108,7 +118,10 @@ for animal in range(len(paired_data)):
     plt.grid()
     plt.title(plot_name)
     plt.tight_layout()
-    plt.savefig(os.path.join(figures_folder, plot_name))
+    if save_figures:
+        plt.savefig(os.path.join(figures_folder, plot_name))
+        plt.close("all")
+plt.show()
 plt.close("all")
 print("Animal CDFs plotted successfully!")
 
@@ -153,9 +166,11 @@ for ax in axes[2].flatten():
 fig.suptitle('Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT)', fontsize=14)
 plt.xlim(0, 20)
 plt.tight_layout()
-plt.savefig(os.path.join(figures_folder, 'Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT).png'))
+if save_figures:
+    plt.savefig(os.path.join(figures_folder, 'Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT).png'))
+    plt.close("all")
+    print("Histograms, KDEs and superimposed CDFs plotted successfully!")
 plt.close("all")
-print("Histograms, KDEs and superimposed CDFs plotted successfully!")
 
 # Plot the histograms, kdes and superimposed cdfs for each animal --------------------------------------------------------
 for animal in range(len(paired_data)):
@@ -205,9 +220,11 @@ for animal in range(len(paired_data)):
     plt.xlim(0, 20)
     plt.ylim(0, 1)
     plt.tight_layout()
-    plt.savefig(os.path.join(figures_folder, f'Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT) for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")}'))
-    plt.close("all")
-    print(f"Animal {list(animals_data['treino'].keys())[animal].replace('TR', '')} plotted successfully!")
+    if save_figures:
+        plt.savefig(os.path.join(figures_folder, f'Bout Durations histogram (normalized) and KDE for each session (TR, RE, TT) for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")}'))
+        plt.close("all")
+        print(f"Animal {list(animals_data['treino'].keys())[animal].replace('TR', '')} plotted successfully!")
+plt.close("all")
 
 # Plot the bout durations as a line plot for the whole experiment ------------------------------------------------------
 
@@ -228,9 +245,11 @@ plt.xlabel('Duration (s)')
 plt.ylabel('Frequency')
 plt.title('Bout Durations for each session (TR, RE, TT) - Unsmoothed')
 plt.tight_layout()
-plt.savefig(os.path.join(figures_folder, 'Bout Durations for each session (TR, RE, TT) - Unsmoothed.png'))
+if save_figures:
+    plt.savefig(os.path.join(figures_folder, 'Bout Durations for each session (TR, RE, TT) - Unsmoothed.png'))
+    plt.close("all")
+    print("Unsmoothed bout durations plotted successfully!")
 plt.close("all")
-print("Unsmoothed bout durations plotted successfully!")
 
 # Interpolate the lines for smoother decay
 TR_spline = make_interp_spline(bin_centers, TR_binned, k=3)
@@ -254,9 +273,11 @@ plt.xlabel('Duration (s)')
 plt.ylabel('Frequency')
 plt.title('Bout Durations for each session (TR, RE, TT) - Smoothed')
 plt.tight_layout()
-plt.savefig(os.path.join(figures_folder, 'Bout Durations for each session (TR, RE, TT) - Smoothed.png'))
+if save_figures:
+    plt.savefig(os.path.join(figures_folder, 'Bout Durations for each session (TR, RE, TT) - Smoothed.png'))
+    plt.close("all")
+    print("Smoothed bout durations plotted successfully!")
 plt.close("all")
-print("Smoothed bout durations plotted successfully!")
 
 # Plot the bout durations as a line plot for each animal ----------------------------------------------------------------
 for animal in range(len(paired_data)):
@@ -290,8 +311,11 @@ for animal in range(len(paired_data)):
     plt.ylabel('Frequency')
     plt.title(f'Bout Durations for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")} (Smoothed)')
     plt.tight_layout()
-    plt.close("all")
-    print(f"Animal {list(animals_data['treino'].keys())[animal].replace('TR', '')} plotted successfully!")
+    if save_figures:
+        plt.savefig(os.path.join(figures_folder, f'Bout Durations for Animal {list(animals_data["treino"].keys())[animal].replace("TR", "")} (Smoothed)'))
+        plt.close("all")
+        print(f"Animal {list(animals_data['treino'].keys())[animal].replace('TR', '')} plotted successfully!")
+plt.close("all")
 
 # Plot the KDE for the whole experiment -----------------------------------------------------------------------------------
 fig, ax_kde = plt.subplots(figsize=(15, 8))
@@ -313,9 +337,11 @@ ax_kde.set_ylabel("Density", fontsize=12)
 ax_kde.set_xlim(0, 15)
 ax_kde.set_title("Normalized KDE for Bout Duration histogram in each session (TR, RE, TT)", fontsize=14)
 plt.tight_layout()
-plt.savefig(os.path.join(figures_folder, 'Normalized KDE for Bout Duration histogram in each session (TR, RE, TT).png'))
+if save_figures:
+    plt.savefig(os.path.join(figures_folder, 'Normalized KDE for Bout Duration histogram in each session (TR, RE, TT).png'))
+    plt.close("all")
+    print("KDE for the whole experiment plotted successfully!")
 plt.close("all")
-print("KDE for the whole experiment plotted successfully!")
 
 # Plot the bout durations for the whole experiment ----------------------------------------------------------------
 multi_x = [TR_durations, RE_durations, TT_durations]
@@ -336,6 +362,47 @@ ax.set_title('Bout Duration histogram for each session stacked (TR, RE, TT)')
 ax.legend()
 ax.grid()
 plt.tight_layout()
-plt.savefig(os.path.join(figures_folder, 'Bout Duration histogram for each session stacked (TR, RE, TT).png'))
+if save_figures:
+    plt.savefig(os.path.join(figures_folder, 'Bout Duration histogram for each session stacked (TR, RE, TT).png'))
+    plt.close("all")
+    print("Bout Duration histogram for each session stacked (TR, RE, TT) plotted successfully!")
 plt.close("all")
-print("Bout Duration histogram for each session stacked (TR, RE, TT) plotted successfully!")
+
+# Run the kolmogorov-smirnov tests for each session ---------------------------------------------------------------------
+training_session_values_all = np.array(TR_durations)
+reactivation_session_values_all = np.array(RE_durations)
+testing_session_values_all = np.array(TT_durations)
+
+statistics_dataframe = pd.DataFrame(columns=["Comparison", "KS Statistic", "P-Value", "Reject Null Hypothesis"])
+
+# Kolmogorov-Smirnov test for TR and RE
+ks_stat_tr_vs_re, ks_p_value_tr_vs_re = stats.ks_2samp(training_session_values_all, reactivation_session_values_all)
+ks_stat_tr_vs_tt, ks_p_value_tr_vs_tt = stats.ks_2samp(training_session_values_all, testing_session_values_all)
+ks_stat_re_vs_tt, ks_p_value_re_vs_tt = stats.ks_2samp(testing_session_values_all, reactivation_session_values_all)
+
+tr_vs_re_row = pd.DataFrame({
+    "Comparison": ["TR vs RE"],
+    "KS Statistic": [ks_stat_tr_vs_re],
+    "P-Value": [ks_p_value_tr_vs_re],
+    "Reject Null Hypothesis": [ks_p_value_tr_vs_re < 0.05]
+})
+
+tr_vs_tt_row = pd.DataFrame({
+    "Comparison": ["TR vs TT"],
+    "KS Statistic": [ks_stat_tr_vs_tt],
+    "P-Value": [ks_p_value_tr_vs_tt],
+    "Reject Null Hypothesis": [ks_p_value_tr_vs_tt < 0.05]
+})
+
+re_vs_tt_row = pd.DataFrame({
+    "Comparison": ["RE vs TT"],
+    "KS Statistic": [ks_stat_re_vs_tt],
+    "P-Value": [ks_p_value_re_vs_tt],
+    "Reject Null Hypothesis": [ks_p_value_re_vs_tt < 0.05]
+})
+
+statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_re_row], ignore_index=True)
+statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_tt_row], ignore_index=True)
+statistics_dataframe = pd.concat([statistics_dataframe, re_vs_tt_row], ignore_index=True)
+
+print(statistics_dataframe)
