@@ -84,6 +84,92 @@ data_dataframe["TR"] = data_dataframe["TR"]
 data_dataframe["RE"] = data_dataframe["RE"]
 data_dataframe["TT"] = data_dataframe["TT"]
 
+# Run the kolmogorov-smirnov tests for each session ---------------------------------------------------------------------
+training_session_values_all = np.array(TR_durations)
+reactivation_session_values_all = np.array(RE_durations)
+testing_session_values_all = np.array(TT_durations)
+
+# Kolmogorov-Smirnov test for TR and RE
+ks_stat_tr_vs_re, ks_p_value_tr_vs_re = stats.ks_2samp(training_session_values_all, reactivation_session_values_all)
+ks_stat_tr_vs_tt, ks_p_value_tr_vs_tt = stats.ks_2samp(training_session_values_all, testing_session_values_all)
+ks_stat_re_vs_tt, ks_p_value_re_vs_tt = stats.ks_2samp(testing_session_values_all, reactivation_session_values_all)
+
+pairwise_dataframe_tr_vs_re = pd.DataFrame(columns=["Animal", "Comparison", "KS Statistic", "P-Value", "Reject Null Hypothesis"])
+pairwise_dataframe_tr_vs_tt = pd.DataFrame(columns=["Animal", "Comparison", "KS Statistic", "P-Value", "Reject Null Hypothesis"])
+pairwise_dataframe_re_vs_tt = pd.DataFrame(columns=["Animal", "Comparison", "KS Statistic", "P-Value", "Reject Null Hypothesis"])
+
+for i, animal in enumerate(paired_data):
+    animal_name = list(animals_data['treino'].keys())[i].replace('TR', '')
+    training_session_values = np.array(animal[0])
+    reactivation_session_values = np.array(animal[1])
+    testing_session_values = np.array(animal[2])
+
+    paired_ks_stat_tr_vs_re, paired_ks_p_value_tr_vs_re = stats.ks_2samp(training_session_values, reactivation_session_values)
+    paired_ks_stat_tr_vs_tt, paired_ks_p_value_tr_vs_tt = stats.ks_2samp(training_session_values, testing_session_values)
+    paired_ks_stat_re_vs_tt, paired_ks_p_value_re_vs_tt = stats.ks_2samp(testing_session_values, reactivation_session_values)
+
+    formatted_p_value_tr_vs_re = f"{paired_ks_p_value_tr_vs_re:.6f}" if paired_ks_p_value_tr_vs_re >= 0.000001 else f"{paired_ks_p_value_tr_vs_re:.1e}"
+    formatted_p_value_tr_vs_tt = f"{paired_ks_p_value_tr_vs_tt:.6f}" if paired_ks_p_value_tr_vs_tt >= 0.000001 else f"{paired_ks_p_value_tr_vs_tt:.1e}"
+    formatted_p_value_re_vs_tt = f"{paired_ks_p_value_re_vs_tt:.6f}" if paired_ks_p_value_re_vs_tt >= 0.000001 else f"{paired_ks_p_value_re_vs_tt:.1e}"
+
+    pairwise_dataframe_tr_vs_re = pd.concat([pairwise_dataframe_tr_vs_re, pd.DataFrame({
+        "Animal": [animal_name],
+        "Comparison": ["TR vs RE"],
+        "KS Statistic": [paired_ks_stat_tr_vs_re],
+        "P-Value": [formatted_p_value_tr_vs_re],
+        "Reject Null Hypothesis": [paired_ks_p_value_tr_vs_re < 0.05]
+    })], ignore_index=True)
+
+    pairwise_dataframe_tr_vs_tt = pd.concat([pairwise_dataframe_tr_vs_tt, pd.DataFrame({
+        "Animal": [animal_name],
+        "Comparison": ["TR vs TT"],
+        "KS Statistic": [paired_ks_stat_tr_vs_tt],
+        "P-Value": [formatted_p_value_tr_vs_tt],
+        "Reject Null Hypothesis": [paired_ks_p_value_tr_vs_tt < 0.05]
+    })], ignore_index=True)
+
+    pairwise_dataframe_re_vs_tt = pd.concat([pairwise_dataframe_re_vs_tt, pd.DataFrame({
+        "Animal": [animal_name],
+        "Comparison": ["RE vs TT"],
+        "KS Statistic": [paired_ks_stat_re_vs_tt],
+        "P-Value": [formatted_p_value_re_vs_tt],
+        "Reject Null Hypothesis": [paired_ks_p_value_re_vs_tt < 0.05]
+    })], ignore_index=True)
+
+
+tr_vs_re_row = pd.DataFrame({
+    "Comparison": ["TR vs RE"],
+    "KS Statistic": [ks_stat_tr_vs_re],
+    "P-Value": [ks_p_value_tr_vs_re],
+    "Reject Null Hypothesis": [ks_p_value_tr_vs_re < 0.05]
+})
+
+tr_vs_tt_row = pd.DataFrame({
+    "Comparison": ["TR vs TT"],
+    "KS Statistic": [ks_stat_tr_vs_tt],
+    "P-Value": [ks_p_value_tr_vs_tt],
+    "Reject Null Hypothesis": [ks_p_value_tr_vs_tt < 0.05]
+})
+
+re_vs_tt_row = pd.DataFrame({
+    "Comparison": ["RE vs TT"],
+    "KS Statistic": [ks_stat_re_vs_tt],
+    "P-Value": [ks_p_value_re_vs_tt],
+    "Reject Null Hypothesis": [ks_p_value_re_vs_tt < 0.05]
+})
+
+statistics_dataframe = pd.DataFrame(columns=["Comparison", "KS Statistic", "P-Value", "Reject Null Hypothesis"])
+statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_re_row], ignore_index=True)
+statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_tt_row], ignore_index=True)
+statistics_dataframe = pd.concat([statistics_dataframe, re_vs_tt_row], ignore_index=True)
+
+# # Save both dataframes to xlsx files
+# statistics_dataframe.to_excel(os.path.join(figures_folder, 'KS_Statistics_All_Animals.xlsx'), index=False)
+# pairwise_dataframe_tr_vs_re.to_excel(os.path.join(figures_folder, 'KS_Statistics_TR_vs_RE.xlsx'), index=False)
+# pairwise_dataframe_tr_vs_tt.to_excel(os.path.join(figures_folder, 'KS_Statistics_TR_vs_TT.xlsx'), index=False)
+# pairwise_dataframe_re_vs_tt.to_excel(os.path.join(figures_folder, 'KS_Statistics_RE_vs_TT.xlsx'), index=False)
+# print("KS statistics saved successfully!")
+
 # Plot the cdfs for each session ---------------------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(15, 8))
 plt.plot(values_TR, cdf_TR, label="TR", color=TR_color, drawstyle='steps-post')
@@ -121,7 +207,6 @@ for animal in range(len(paired_data)):
     if save_figures:
         plt.savefig(os.path.join(figures_folder, plot_name))
         plt.close("all")
-plt.show()
 plt.close("all")
 print("Animal CDFs plotted successfully!")
 
@@ -379,6 +464,19 @@ statistics_dataframe = pd.DataFrame(columns=["Comparison", "KS Statistic", "P-Va
 ks_stat_tr_vs_re, ks_p_value_tr_vs_re = stats.ks_2samp(training_session_values_all, reactivation_session_values_all)
 ks_stat_tr_vs_tt, ks_p_value_tr_vs_tt = stats.ks_2samp(training_session_values_all, testing_session_values_all)
 ks_stat_re_vs_tt, ks_p_value_re_vs_tt = stats.ks_2samp(testing_session_values_all, reactivation_session_values_all)
+
+pairwise_tr_vs_re_ks = []
+pairwise_tr_vs_tt_ks = []
+pairwise_re_vs_tt_ks = []
+
+for i, animal in enumerate(paired_data):
+    animal_name = list(animals_data['treino'].keys())[i].replace('TR', '')
+    training_session_values = np.array(animal[0])
+    reactivation_session_values = np.array(animal[1])
+    testing_session_values = np.array(animal[2])
+
+    paired_ks_stat_tr_vs_re, paired_ks_p_value_tr_vs_re = stats.ks_2samp(training_session_values, reactivation_session_values)
+
 
 tr_vs_re_row = pd.DataFrame({
     "Comparison": ["TR vs RE"],
