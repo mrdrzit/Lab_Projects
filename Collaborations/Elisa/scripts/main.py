@@ -136,7 +136,6 @@ for i, animal in enumerate(paired_data):
         "Reject Null Hypothesis": [paired_ks_p_value_re_vs_tt < 0.05]
     })], ignore_index=True)
 
-
 tr_vs_re_row = pd.DataFrame({
     "Comparison": ["TR vs RE"],
     "KS Statistic": [ks_stat_tr_vs_re],
@@ -163,12 +162,108 @@ statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_re_row], ignore_in
 statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_tt_row], ignore_index=True)
 statistics_dataframe = pd.concat([statistics_dataframe, re_vs_tt_row], ignore_index=True)
 
-# # Save both dataframes to xlsx files
-# statistics_dataframe.to_excel(os.path.join(figures_folder, 'KS_Statistics_All_Animals.xlsx'), index=False)
-# pairwise_dataframe_tr_vs_re.to_excel(os.path.join(figures_folder, 'KS_Statistics_TR_vs_RE.xlsx'), index=False)
-# pairwise_dataframe_tr_vs_tt.to_excel(os.path.join(figures_folder, 'KS_Statistics_TR_vs_TT.xlsx'), index=False)
-# pairwise_dataframe_re_vs_tt.to_excel(os.path.join(figures_folder, 'KS_Statistics_RE_vs_TT.xlsx'), index=False)
-# print("KS statistics saved successfully!")
+# Save both dataframes to xlsx files
+statistics_dataframe.to_excel(os.path.join(figures_folder, 'KS_Statistics_All_Animals.xlsx'), index=False)
+pairwise_dataframe_tr_vs_re.to_excel(os.path.join(figures_folder, 'KS_Statistics_TR_vs_RE.xlsx'), index=False)
+pairwise_dataframe_tr_vs_tt.to_excel(os.path.join(figures_folder, 'KS_Statistics_TR_vs_TT.xlsx'), index=False)
+pairwise_dataframe_re_vs_tt.to_excel(os.path.join(figures_folder, 'KS_Statistics_RE_vs_TT.xlsx'), index=False)
+print("KS statistics saved successfully!")
+
+# Run a kruskal wallis test for each session ------------------------------------------------------------------------------
+training_session_values_all = np.array(TR_durations)
+reactivation_session_values_all = np.array(RE_durations)
+testing_session_values_all = np.array(TT_durations)
+
+# Kolmogorov-Smirnov test for TR and RE
+ks_stat_tr_vs_re, ks_p_value_tr_vs_re = stats.kruskal(training_session_values_all, reactivation_session_values_all)
+ks_stat_tr_vs_tt, ks_p_value_tr_vs_tt = stats.kruskal(training_session_values_all, testing_session_values_all)
+ks_stat_re_vs_tt, ks_p_value_re_vs_tt = stats.kruskal(testing_session_values_all, reactivation_session_values_all)
+
+pairwise_kruskal_tr_vs_re_dataframe = pd.DataFrame(columns=["Animal", "Comparison", "H-Statistic", "P-Value", "Reject Null Hypothesis"])
+pairwise_kruskal_tr_vs_tt_dataframe = pd.DataFrame(columns=["Animal", "Comparison", "H-Statistic", "P-Value", "Reject Null Hypothesis"])
+pairwise_kruskal_re_vs_tt_dataframe = pd.DataFrame(columns=["Animal", "Comparison", "H-Statistic", "P-Value", "Reject Null Hypothesis"])
+
+kruskal_dataframe = pd.DataFrame(columns=["Comparison", "H-Statistic", "P-Value", "Reject Null Hypothesis"])
+
+for i, animal in enumerate(paired_data):
+    animal_name = list(animals_data['treino'].keys())[i].replace('TR', '')
+    training_session_values = np.array(animal[0])
+    reactivation_session_values = np.array(animal[1])
+    testing_session_values = np.array(animal[2])
+
+    paired_ks_stat_tr_vs_re, paired_ks_p_value_tr_vs_re = stats.kruskal(training_session_values, reactivation_session_values)
+    paired_ks_stat_tr_vs_tt, paired_ks_p_value_tr_vs_tt = stats.kruskal(training_session_values, testing_session_values)
+    paired_ks_stat_re_vs_tt, paired_ks_p_value_re_vs_tt = stats.kruskal(testing_session_values, reactivation_session_values)
+
+    formatted_p_value_tr_vs_re = f"{paired_ks_p_value_tr_vs_re:.6f}" if paired_ks_p_value_tr_vs_re >= 0.000001 else f"{paired_ks_p_value_tr_vs_re:.1e}"
+    formatted_p_value_tr_vs_tt = f"{paired_ks_p_value_tr_vs_tt:.6f}" if paired_ks_p_value_tr_vs_tt >= 0.000001 else f"{paired_ks_p_value_tr_vs_tt:.1e}"
+    formatted_p_value_re_vs_tt = f"{paired_ks_p_value_re_vs_tt:.6f}" if paired_ks_p_value_re_vs_tt >= 0.000001 else f"{paired_ks_p_value_re_vs_tt:.1e}"
+
+    pairwise_kruskal_tr_vs_re_dataframe = pd.concat([pairwise_kruskal_tr_vs_re_dataframe, pd.DataFrame({
+        "Animal": [animal_name],
+        "Comparison": ["TR vs RE"],
+        "H-Statistic": [paired_ks_stat_tr_vs_re],
+        "P-Value": [formatted_p_value_tr_vs_re],
+        "Reject Null Hypothesis": [paired_ks_p_value_tr_vs_re < 0.05]
+    })], ignore_index=True)
+
+    pairwise_kruskal_tr_vs_tt_dataframe = pd.concat([pairwise_kruskal_tr_vs_tt_dataframe, pd.DataFrame({
+        "Animal": [animal_name],
+        "Comparison": ["TR vs TT"],
+        "H-Statistic": [paired_ks_stat_tr_vs_tt],
+        "P-Value": [formatted_p_value_tr_vs_tt],
+        "Reject Null Hypothesis": [paired_ks_p_value_tr_vs_tt < 0.05]
+    })], ignore_index=True)
+
+    pairwise_kruskal_re_vs_tt_dataframe = pd.concat([pairwise_kruskal_re_vs_tt_dataframe, pd.DataFrame({
+        "Animal": [animal_name],
+        "Comparison": ["RE vs TT"],
+        "H-Statistic": [paired_ks_stat_re_vs_tt],
+        "P-Value": [formatted_p_value_re_vs_tt],
+        "Reject Null Hypothesis": [paired_ks_p_value_re_vs_tt < 0.05]
+    })], ignore_index=True)
+
+kruskal_tr_vs_re_row = pd.DataFrame({
+    "Comparison": ["TR vs RE"],
+    "H-Statistic": [ks_stat_tr_vs_re],
+    "P-Value": [ks_p_value_tr_vs_re],
+    "Reject Null Hypothesis": [ks_p_value_tr_vs_re < 0.05]
+})
+
+kruskal_tr_vs_tt_row = pd.DataFrame({
+    "Comparison": ["TR vs TT"],
+    "H-Statistic": [ks_stat_tr_vs_tt],
+    "P-Value": [ks_p_value_tr_vs_tt],
+    "Reject Null Hypothesis": [ks_p_value_tr_vs_tt < 0.05]
+})
+
+kruskal_re_vs_tt_row = pd.DataFrame({
+    "Comparison": ["RE vs TT"],
+    "H-Statistic": [ks_stat_re_vs_tt],
+    "P-Value": [ks_p_value_re_vs_tt],
+    "Reject Null Hypothesis": [ks_p_value_re_vs_tt < 0.05]
+})
+
+kruskal_dataframe = pd.concat([kruskal_dataframe, kruskal_tr_vs_re_row], ignore_index=True)
+kruskal_dataframe = pd.concat([kruskal_dataframe, kruskal_tr_vs_tt_row], ignore_index=True)
+kruskal_dataframe = pd.concat([kruskal_dataframe, kruskal_re_vs_tt_row], ignore_index=True)
+
+print(kruskal_dataframe)
+print(statistics_dataframe)
+print(pairwise_kruskal_tr_vs_tt_dataframe)
+print(pairwise_kruskal_tr_vs_re_dataframe)
+print(pairwise_kruskal_re_vs_tt_dataframe)
+print(pairwise_dataframe_tr_vs_re)
+print(pairwise_dataframe_tr_vs_tt)
+print(pairwise_dataframe_re_vs_tt)
+
+# Save both dataframes to xlsx files
+kruskal_dataframe.to_excel(os.path.join(figures_folder, 'Kruskal_Wallis_Statistics_All_Animals.xlsx'), index=False)
+pairwise_kruskal_tr_vs_re_dataframe.to_excel(os.path.join(figures_folder, 'Kruskal_Wallis_Statistics_TR_vs_RE.xlsx'), index=False)
+pairwise_kruskal_tr_vs_tt_dataframe.to_excel(os.path.join(figures_folder, 'Kruskal_Wallis_Statistics_TR_vs_TT.xlsx'), index=False)
+pairwise_kruskal_re_vs_tt_dataframe.to_excel(os.path.join(figures_folder, 'Kruskal_Wallis_Statistics_RE_vs_TT.xlsx'), index=False)
+print("Kruskal Wallis statistics saved successfully!")
+
 
 # Plot the cdfs for each session ---------------------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(15, 8))
@@ -452,55 +547,3 @@ if save_figures:
     plt.close("all")
     print("Bout Duration histogram for each session stacked (TR, RE, TT) plotted successfully!")
 plt.close("all")
-
-# Run the kolmogorov-smirnov tests for each session ---------------------------------------------------------------------
-training_session_values_all = np.array(TR_durations)
-reactivation_session_values_all = np.array(RE_durations)
-testing_session_values_all = np.array(TT_durations)
-
-statistics_dataframe = pd.DataFrame(columns=["Comparison", "KS Statistic", "P-Value", "Reject Null Hypothesis"])
-
-# Kolmogorov-Smirnov test for TR and RE
-ks_stat_tr_vs_re, ks_p_value_tr_vs_re = stats.ks_2samp(training_session_values_all, reactivation_session_values_all)
-ks_stat_tr_vs_tt, ks_p_value_tr_vs_tt = stats.ks_2samp(training_session_values_all, testing_session_values_all)
-ks_stat_re_vs_tt, ks_p_value_re_vs_tt = stats.ks_2samp(testing_session_values_all, reactivation_session_values_all)
-
-pairwise_tr_vs_re_ks = []
-pairwise_tr_vs_tt_ks = []
-pairwise_re_vs_tt_ks = []
-
-for i, animal in enumerate(paired_data):
-    animal_name = list(animals_data['treino'].keys())[i].replace('TR', '')
-    training_session_values = np.array(animal[0])
-    reactivation_session_values = np.array(animal[1])
-    testing_session_values = np.array(animal[2])
-
-    paired_ks_stat_tr_vs_re, paired_ks_p_value_tr_vs_re = stats.ks_2samp(training_session_values, reactivation_session_values)
-
-
-tr_vs_re_row = pd.DataFrame({
-    "Comparison": ["TR vs RE"],
-    "KS Statistic": [ks_stat_tr_vs_re],
-    "P-Value": [ks_p_value_tr_vs_re],
-    "Reject Null Hypothesis": [ks_p_value_tr_vs_re < 0.05]
-})
-
-tr_vs_tt_row = pd.DataFrame({
-    "Comparison": ["TR vs TT"],
-    "KS Statistic": [ks_stat_tr_vs_tt],
-    "P-Value": [ks_p_value_tr_vs_tt],
-    "Reject Null Hypothesis": [ks_p_value_tr_vs_tt < 0.05]
-})
-
-re_vs_tt_row = pd.DataFrame({
-    "Comparison": ["RE vs TT"],
-    "KS Statistic": [ks_stat_re_vs_tt],
-    "P-Value": [ks_p_value_re_vs_tt],
-    "Reject Null Hypothesis": [ks_p_value_re_vs_tt < 0.05]
-})
-
-statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_re_row], ignore_index=True)
-statistics_dataframe = pd.concat([statistics_dataframe, tr_vs_tt_row], ignore_index=True)
-statistics_dataframe = pd.concat([statistics_dataframe, re_vs_tt_row], ignore_index=True)
-
-print(statistics_dataframe)
