@@ -109,3 +109,7 @@ ffmpeg -i input.mp4 -ss START_TIME -to END_TIME -c copy output.mp4
         -c copy is to copy the streams directly
         output.mp4 is the output file name
 
+
+
+
+ffmpeg -y -i "input.mp4" -c:v libx264 -pix_fmt yuv420p -preset superfast -crf 23 "output.mp4"
