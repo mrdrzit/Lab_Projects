@@ -136,73 +136,117 @@ for (i = 0; i < qtd; i++) {
   continue_analysis = true;
   mask_number = 0;
   while (continue_analysis) {
-      waitForUser("Please drag the pre-created mask for the area to be analyzed into the ImageJ window and press OK to continue.");
-      roi_name = File.nameWithoutExtension;
+    waitForUser("Please drag the pre-created mask for the area to be analyzed into the ImageJ window and press OK to continue.");
+    roi_name = File.nameWithoutExtension;
 
-      // Perform the analysis
-      run("Measure");
-      selectWindow("Results");
-      Table.update;
+    // Perform the analysis
+    run("Measure");
+    selectWindow("Results");
+    Table.update;
 
-      num_rows_in_table = Table.size;
-      if (num_rows_in_table > 1){
-          waitForUser("Please close the results table and press OK. There can be only one row in the table, that is, for the current ROI.")
-          run("Measure");
-          Table.rename("Summary", "Results");
-          selectWindow("Results");
-          Table.update;
+    num_rows_in_table = Table.size;
+    if (num_rows_in_table > 1){
+        waitForUser("Please close the results table and press OK. There can be only one row in the table, that is, for the current ROI.");
+        run("Measure");
+        Table.rename("Summary", "Results");
+        selectWindow("Results");
+        Table.update;
+    }else{
+        roi_area = Table.get("Area", 0);
+        String.copy(roi_area);
+        waitForUser("The ROI area is on the clipboard, please paste it into excel, check to see if its the correct value as shown in the results/summary table and, if yes, press OK to continue.\nTip: Excel will have the decimals separated by a dot and the thousands separated by a comma if the language is set to Portuguese.\nSo to properly paste it, you need to change this configuration or convert it manually");
+        if (isOpen("Results")){
+            selectWindow("Results"); 
+            close("Results");
+        }
+    }
+
+    run("Analyze Particles...", "size=10-1500 circularity=0.00-1.00 show=Masks clear summarize");
+    Table.rename("Summary", "Results");
+    selectWindow("Results");
+    Table.update;
+    waitForUser("Please check if the mask is matches the ROI currently being analyzed and press OK to continue. if not, please re-run the analyze particles with the adjusted parameters before continuing.");
+    selectWindow("Results");
+    Table.update;
+
+    num_rows_in_table = Table.size;
+    if (num_rows_in_table > 1){
+        waitForUser("Please close the results table and press OK. There can be only one row in the table, that is, for the current ROI.")
+        run("Measure");
+        Table.rename("Summary", "Results");
+        selectWindow("Results");
+        Table.update;
+    }else{
+        count = Table.get("Count", 0);
+        String.copy(count);
+        waitForUser("The number of cells counted is on the clipboard, please paste it into excel.\nCheck to see if its the correct value as shown in the results/summary table and, if yes,\npress OK to continue.");
+        if (isOpen("Results")){
+            selectWindow("Results"); 
+            close("Results");
+        }
+    }
+
+    selectImage("Mask of " + name_to_save + ".png");
+    saveAs("PNG", output + name_to_save + "_mask" + mask_number + ".png");
+    close(name_to_save + "_mask.png");
+
+    // Close everything and go to the next image
+    if (isOpen("Results")){
+        selectWindow("Results"); 
+        run("Close");
+    }
+    if (isOpen("Log")){
+        selectWindow("Log");
+        run("Close");
+    }
+    run("Select None");
+
+    // Ask if the user wants to continue analyzing more areas 
+    continue_analysis = getBoolean("Do you want to analyze more areas?");
+    mask_number++;
+
+    run("Show All");
+    list = getList("image.titles");
+    Array.sort(list);
+  
+    for (p = 0; p < list.length; p++) {
+      if (indexOf(list[p], "blur") > -1) {
+        close(list[p]);
+      }
+      else if (indexOf(list[p], "MAX") > -1) {
+        close(list[p]);
+      }
+      else if (indexOf(list[p], "mask") > -1) {
+        close(list[p]);
       }else{
-          roi_area = Table.get("Area", 0);
-          String.copy(roi_area);
-          waitForUser("The ROI area is on the clipboard, please paste it into excel, check to see if its the correct value as shown in the results/summary table and, if yes, press OK to continue.\nTip: Excel will have the decimals separated by a dot and the thousands separated by a comma if the language is set to Portuguese.\nSo to properly paste it, you need to change this configuration or convert it manually");
-          if (isOpen("Results")){
-              selectWindow("Results"); 
-              close("Results");
-          }
+        continue;
       }
-
-      run("Analyze Particles...", "size=10-1500 circularity=0.00-1.00 show=Masks clear summarize");
-      Table.rename("Summary", "Results");
-      selectWindow("Results");
-      Table.update;
-      waitForUser("Please check if the mask is matches the ROI currently being analyzed and press OK to continue. if not, please re-run the analyze particles with the adjusted parameters before continuing.");
-      selectWindow("Results");
-      Table.update;
-
-      num_rows_in_table = Table.size;
-      if (num_rows_in_table > 1){
-          waitForUser("Please close the results table and press OK. There can be only one row in the table, that is, for the current ROI.")
-          run("Measure");
-          Table.rename("Summary", "Results");
-          selectWindow("Results");
-          Table.update;
-      }else{
-          count = Table.get("Count", 0);
-          String.copy(count);
-          waitForUser("The number of cells counted is on the clipboard, please paste it into excel.\nCheck to see if its the correct value as shown in the results/summary table and, if yes,\npress OK to continue.");
-          if (isOpen("Results")){
-              selectWindow("Results"); 
-              close("Results");
-          }
-      }
-
-      selectImage("Mask of " + name_to_save + ".png");
-      saveAs("PNG", output + name_to_save + "_mask" + mask_number + ".png");
-      close(name_to_save + "_mask.png");
-
-      // Close everything and go to the next image
-      if (isOpen("Results")){
-          selectWindow("Results"); 
-          run("Close");
-      }
-      if (isOpen("Log")){
-          selectWindow("Log");
-          run("Close");
-      }
-      run("Select None");
-
-      // Ask if the user wants to continue analyzing more areas 
-      continue_analysis = getBoolean("Do you want to analyze more areas?");
-      mask_number++;
+    }
   }
 }
+
+
+// Close All Open Windows
+run("Close All");
+
+// Close Additional Windows if Open
+if (isOpen("Results")) {
+  selectWindow("Results");
+  run("Close");
+}
+if (isOpen("Log")) {
+  selectWindow("Log");
+  run("Close");
+}
+if (isOpen("ROI Manager")) {
+  selectWindow("ROI Manager");
+  run("Close");
+}
+
+// Close Any Remaining Images
+while (nImages() > 0) {
+  selectImage(nImages());
+  run("Close");
+}
+
+waitForUser("Finished\nLets go to the next one! :)");

@@ -547,3 +547,52 @@ if save_figures:
     plt.close("all")
     print("Bout Duration histogram for each session stacked (TR, RE, TT) plotted successfully!")
 plt.close("all")
+
+# Plot the representative figure for the whole experiment's cdf's -------------------------------------------------------
+
+# Kolmogorov-Smirnov test for TR and RE
+ks_stat_tr_vs_re_object = stats.ks_2samp(training_session_values_all, reactivation_session_values_all)
+ks_stat_tr_vs_tt_object = stats.ks_2samp(training_session_values_all, testing_session_values_all)
+ks_stat_re_vs_tt_object = stats.ks_2samp(testing_session_values_all, reactivation_session_values_all)
+
+tr_vs_re_loc = ks_stat_tr_vs_re_object.statistic_location
+tr_vs_re_p_sign = ks_stat_tr_vs_re_object.statistic_sign
+
+
+# create two normal distributions
+uniform_dist1 = np.random.uniform(0, 1, 1000)
+uniform_dist2 = np.random.uniform(0, 1, 1000)
+
+gauss1_vals, uniform_1_cdf = cumulative_distribution(uniform_dist1)
+gauss2_vals, uniform_2_cdf = cumulative_distribution(uniform_dist2)
+
+gauss1_cdf = stats.norm.cdf(uniform_dist1)
+gauss2_cdf = stats.norm.cdf(uniform_dist2)
+
+
+gauss_ks = stats.ks_2samp(uniform_dist1, uniform_dist2)
+gauss_ks_stat = gauss_ks.statistic
+gauss_ks_p = gauss_ks.pvalue
+gauss_ks_loc = gauss_ks.statistic_location
+gauss_ks_sign = gauss_ks.statistic_sign
+
+fig, ax = plt.subplots(figsize=(15, 8))
+ax.plot(gauss1_vals, uniform_1_cdf, label="Uniform Distribution 1", color='blue', drawstyle='steps-post')
+ax.plot(gauss2_vals, uniform_2_cdf, label="Uniform Distribution 2", color='red', drawstyle='steps-post')
+ax.legend()
+
+# Training session vs Reactivation session
+fig, ax = plt.subplots(figsize=(15, 8))
+ax.plot(values_TR, cdf_TR, label="TR", color=TR_color, drawstyle='steps-post')
+ax.plot(values_RE, cdf_RE, label="RE", color=RE_color, drawstyle='steps-post')
+
+ax.legend()
+plt.xlabel('Duration (s)', fontsize=12)
+plt.ylabel('Cumulative Probability', fontsize=12)
+plt.grid()
+plt.title('Cumulative distribution function for every animal in each session (TR, RE, TT)')
+plt.tight_layout()
+
+# Plot line between the maximum difference between the two gaussian distributions but restricted to the limit between the curves
+plt.axvline(tr_vs_re_loc, color='black', linestyle='dashed', linewidth=1)
+
