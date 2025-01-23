@@ -1,5 +1,6 @@
 import pandas as pd
 from pyautogui import click, locateOnScreen, moveTo, hotkey
+import webbrowser
 import os
 import pyperclip
 import time
@@ -48,35 +49,16 @@ for index, row_content in enumerate(summary_rows):
 message_parts.append("⚠️ Vocês podem encontrar uma descrição com mais detalhes dessas oportunidades na seguinte planilha: https://docs.google.com/spreadsheets/d/1_E98ODQlImmtrDubwZU2fEWNjXBzNrP4l-AucYd07K4/edit?usp=sharing")
 final_message = "\n".join(message_parts)
 
+# print(final_message)
+
 def findtextbox() -> None:
     """click on text box"""
-    dir_path = os.path.dirname(os.path.realpath(__file__))
     try:
-        firefox = locateOnScreen(os.path.join(dir_path, "Firefox_logo.png"))
-        moveTo(firefox[0], firefox[1])
-        click()
-    except Exception:
-        print("Firefox not found")
-        exit()
-
-    # Open web.whatsapp.com in a new tab 
-    try:
-        hotkey('ctrl', 't')
-        pyperclip.copy("https://web.whatsapp.com/accept?code=CnrBPNWyz1Q3BVTTrpgpf6")
-        hotkey('ctrl', 'v')
-        hotkey('enter')
+        webbrowser.open("https://markdownlivepreview.com/")
+        # webbrowser.open("https://web.whatsapp.com/accept?code=CnrBPNWyz1Q3BVTTrpgpf6")
     except Exception:
         print("Failed to open whatsapp web")
-        exit()
-    time.sleep(10)
-
-    try:
-        location = locateOnScreen(os.path.join(dir_path, "pywhatkit_smile.png"))
-        moveTo(location[0] + 150, location[1] + 5)
-        click()
-    except Exception:
-        print("Failed to find text box")
-        exit()
+    time.sleep(3)
     
     # Delete previous message
     hotkey('ctrl', 'a')
