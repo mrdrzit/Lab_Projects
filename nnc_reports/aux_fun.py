@@ -1,11 +1,19 @@
 import pandas as pd
 from pyautogui import click, locateOnScreen, moveTo, hotkey
 import webbrowser
-import os
 import pyperclip
 import time
+import locale
 from datetime import datetime
 
+locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8") 
+
+def parse_deadline(date_str):
+    try:
+        return datetime.strptime(date_str, "%d de %B de %Y")
+    except ValueError:
+        return None  
+    
 SHEET_NAME = "nnc_oportunidades"
 SHEET_ID = "1_E98ODQlImmtrDubwZU2fEWNjXBzNrP4l-AucYd07K4"
 SHEET_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}"
@@ -24,16 +32,50 @@ COLUMN_WEBSITE = "Site"
 COLUMN_PERIOD = "Período"
 COLUMN_APPLICATION_DEADLINE = "Deadline para aplicação"
 COLUMN_REQUIRED_DOCUMENTS = "Documentos necessários"
+COLUMN_ALREADY_NOTIFIED = "Foi notificado no grupo"
 
+NEXT_MONTH = CURRENT_MONTH + 1 if CURRENT_MONTH < 12 else 1
+CURRENT_SUMMARY_MONTHS = [MONTHS[CURRENT_MONTH], MONTHS[NEXT_MONTH]]
+
+# Read the data
 data = pd.read_csv(SHEET_URL)
 
-deadline_list = data.loc[:, COLUMN_APPLICATION_DEADLINE]
-current_summary_months = [MONTHS[CURRENT_MONTH], MONTHS[CURRENT_MONTH+1]]
-summary_rows = [row if any(month in row for month in current_summary_months) else None for row in deadline_list]
+# Create a new dataframe with parsed deadlines
+data_with_dates = data.copy()
+data_with_dates[COLUMN_APPLICATION_DEADLINE] = data_with_dates[COLUMN_APPLICATION_DEADLINE].astype(str).apply(parse_deadline)
 
-message_parts = [f"🌟 *Oportunidades Acadêmicas - {MONTHS[CURRENT_MONTH].capitalize()} e {MONTHS[CURRENT_MONTH+1].capitalize()}* 🌟\n"]
+# Filter out opportunities that have already been notified
+unnotified_data = data_with_dates[data_with_dates[COLUMN_ALREADY_NOTIFIED] == 0]
+
+# Drop rows where the deadline couldn't be parsed (NaT values)
+filtered_data = unnotified_data.dropna(subset=[COLUMN_APPLICATION_DEADLINE])
+
+# Reset index to preserve original indices as a column
+filtered_data = filtered_data.reset_index()
+
+# Add a column to identify if the deadline is in the current month
+filtered_data['is_current_month'] = filtered_data[COLUMN_APPLICATION_DEADLINE].dt.strftime('%B %Y') == CURRENT_SUMMARY_MONTHS[0]
+
+# Sort by: 1) whether it's in the current month (ascending, so False comes first), 2) deadline (ascending)
+sorted_data = filtered_data.sort_values(by=['is_current_month', COLUMN_APPLICATION_DEADLINE])
+
+# Group by opportunity name and keep the first (earliest) entry for each group
+unique_opportunities = sorted_data.groupby(COLUMN_OPPORTUNITY_NAME, as_index=False).first()
+
+# Trim the list to at most 8 items, prioritizing non-current month opportunities
+if len(unique_opportunities) > 8:
+    unique_opportunities = unique_opportunities.head(8)
+
+# Get the original indices from the 'index' column
+indices_to_mark = sorted(unique_opportunities['index'].tolist())
+
+# Use the indices to retrieve the corresponding rows from the original dataframe
+final_message_dataframe = data.loc[indices_to_mark]
+
+
+message_parts = [f"🌟 *Oportunidades Acadêmicas - {CURRENT_SUMMARY_MONTHS[0].capitalize()} e {CURRENT_SUMMARY_MONTHS[1].capitalize()}* 🌟\n"]
 current_index = 1
-for index, row_content in enumerate(summary_rows):
+for index, row_content in enumerate(unique_opportunities):
     if row_content is not None:
         row = data.iloc[index]
         message_parts.append(f"{current_index}️⃣ *{row[COLUMN_OPPORTUNITY_NAME]}*\n"
