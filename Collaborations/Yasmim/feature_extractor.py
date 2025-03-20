@@ -44,11 +44,11 @@ def angle_between_points(x1, y1, x2, y2, angle_type='degrees'):
 
 3. **Grooming**  
    - Ângulo da cabeça-centro/quadril
-   - Distância cabeça-centro  
+   - Distância cabeça-centro
    - Distância cabeça-quadril  
    - Movimento do ponto da cabeça
-   - Posição do centro de massa
    - Velocidade do centro de massa
+   - Posição do centro de massa
 
 4. **Rearing**  
    - Ângulo cabeça-centro  
@@ -99,37 +99,37 @@ for x1, y1, x2, y2 in zip(tracking_data[centro_x_pos], tracking_data[centro_y_po
    head_angle_from_center.append(angle_between_points(x1, y1, x2, y2))
 head_angle_from_center = pd.DataFrame(head_angle_from_center, columns=['head_angle_from_center'])
 
-# Nose point disappearance ----------------------------------------------------------------------------------------------------------------------
+# Nose point disappearance --------------------------------------------------------------------------------------------------------------------
 nose_point_disappearance = (tracking_data[focinho_p] < 0.4).astype(int).rename('nose_point_disappearance')
 
-# Nose point velocity ----------------------------------------------------------------------------------------------------------------------
-nose_point_velocity = pd.DataFrame(np.sqrt(np.diff(tracking_data[focinho_x_pos])**2 + np.diff(tracking_data[focinho_y_pos])**2)).rename(columns={0: 'nose_point_velocity'})
+# Nose point velocity -------------------------------------------------------------------------------------------------------------------------
+nose_point_velocity = pd.DataFrame(np.sqrt(np.append(0, np.diff(tracking_data[focinho_x_pos]))**2 + np.append(0, np.diff(tracking_data[focinho_y_pos]))**2)).rename(columns={0: 'nose_point_velocity'})
 
-# Nose point position ----------------------------------------------------------------------------------------------------------------------
+# Nose point position -------------------------------------------------------------------------------------------------------------------------
 nose_point_position_x = tracking_data[focinho_x_pos].rename('nose_point_position_x')
 nose_point_position_y = tracking_data[focinho_y_pos].rename('nose_point_position_y')
 
 ## Resting and locomotion features extraction
-# Movement of points ----------------------------------------------------------------------------------------------------------------------
-focinho_x_movement = pd.DataFrame(np.diff(tracking_data[focinho_x_pos])).rename(columns={0: 'focinho_x_movement'})
-focinho_y_movement = pd.DataFrame(np.diff(tracking_data[focinho_y_pos])).rename(columns={0: 'focinho_y_movement'})
-orelha_E_x_movement = pd.DataFrame(np.diff(tracking_data[orelha_E_x_pos])).rename(columns={0: 'orelha_E_x_movement'})
-orelha_E_y_movement = pd.DataFrame(np.diff(tracking_data[orelha_E_y_pos])).rename(columns={0: 'orelha_E_y_movement'})
-orelha_D_x_movement = pd.DataFrame(np.diff(tracking_data[orelha_D_x_pos])).rename(columns={0: 'orelha_D_x_movement'})
-orelha_D_y_movement = pd.DataFrame(np.diff(tracking_data[orelha_D_y_pos])).rename(columns={0: 'orelha_D_y_movement'})
-centro_x_movement = pd.DataFrame(np.diff(tracking_data[centro_x_pos])).rename(columns={0: 'centro_x_movement'})
-centro_y_movement = pd.DataFrame(np.diff(tracking_data[centro_y_pos])).rename(columns={0: 'centro_y_movement'})
-rabo_x_movement = pd.DataFrame(np.diff(tracking_data[rabo_x_pos])).rename(columns={0: 'rabo_x_movement'})
-rabo_y_movement = pd.DataFrame(np.diff(tracking_data[rabo_y_pos])).rename(columns={0: 'rabo_y_movement'})
+# Movement of points --------------------------------------------------------------------------------------------------------------------------
+focinho_x_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[focinho_x_pos]))).rename(columns={0: 'focinho_x_movement'})
+focinho_y_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[focinho_y_pos]))).rename(columns={0: 'focinho_y_movement'})
+orelha_E_x_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[orelha_E_x_pos]))).rename(columns={0: 'orelha_E_x_movement'})
+orelha_E_y_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[orelha_E_y_pos]))).rename(columns={0: 'orelha_E_y_movement'})
+orelha_D_x_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[orelha_D_x_pos]))).rename(columns={0: 'orelha_D_x_movement'})
+orelha_D_y_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[orelha_D_y_pos]))).rename(columns={0: 'orelha_D_y_movement'})
+centro_x_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[centro_x_pos]))).rename(columns={0: 'centro_x_movement'})
+centro_y_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[centro_y_pos]))).rename(columns={0: 'centro_y_movement'})
+rabo_x_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[rabo_x_pos]))).rename(columns={0: 'rabo_x_movement'})
+rabo_y_movement = pd.DataFrame(np.append(0, np.diff(tracking_data[rabo_y_pos]))).rename(columns={0: 'rabo_y_movement'})
 
-# Velocity of points ----------------------------------------------------------------------------------------------------------------------
-focinho_velocity = pd.DataFrame(np.sqrt(np.diff(tracking_data[focinho_x_pos])**2 + np.diff(tracking_data[focinho_y_pos])**2)).rename(columns={0: 'focinho_velocity'})
-orelha_E_velocity = pd.DataFrame(np.sqrt(np.diff(tracking_data[orelha_E_x_pos])**2 + np.diff(tracking_data[orelha_E_y_pos])**2)).rename(columns={0: 'orelha_E_velocity'})
-orelha_D_velocity = pd.DataFrame(np.sqrt(np.diff(tracking_data[orelha_D_x_pos])**2 + np.diff(tracking_data[orelha_D_y_pos])**2)).rename(columns={0: 'orelha_D_velocity'})
-centro_velocity = pd.DataFrame(np.sqrt(np.diff(tracking_data[centro_x_pos])**2 + np.diff(tracking_data[centro_y_pos])**2)).rename(columns={0: 'centro_velocity'})
-rabo_velocity = pd.DataFrame(np.sqrt(np.diff(tracking_data[rabo_x_pos])**2 + np.diff(tracking_data[rabo_y_pos])**2)).rename(columns={0: 'rabo_velocity'})
+# Velocity of points --------------------------------------------------------------------------------------------------------------------------
+focinho_velocity = pd.DataFrame(np.sqrt(np.append(0, np.diff(tracking_data[focinho_x_pos]))**2 + np.append(0, np.diff(tracking_data[focinho_y_pos]))**2)).rename(columns={0: 'focinho_velocity'})
+orelha_E_velocity = pd.DataFrame(np.sqrt(np.append(0, np.diff(tracking_data[orelha_E_x_pos]))**2 + np.append(0, np.diff(tracking_data[orelha_E_y_pos]))**2)).rename(columns={0: 'orelha_E_velocity'})
+orelha_D_velocity = pd.DataFrame(np.sqrt(np.append(0, np.diff(tracking_data[orelha_D_x_pos]))**2 + np.append(0, np.diff(tracking_data[orelha_D_y_pos]))**2)).rename(columns={0: 'orelha_D_velocity'})
+centro_velocity = pd.DataFrame(np.sqrt(np.append(0, np.diff(tracking_data[centro_x_pos]))**2 + np.append(0, np.diff(tracking_data[centro_y_pos]))**2)).rename(columns={0: 'centro_velocity'})
+rabo_velocity = pd.DataFrame(np.sqrt(np.append(0, np.diff(tracking_data[rabo_x_pos]))**2 + np.append(0, np.diff(tracking_data[rabo_y_pos]))**2)).rename(columns={0: 'rabo_velocity'})
 
-# Velocity of center of mass ----------------------------------------------------------------------------------------------------------------------
+# Velocity of center of mass ------------------------------------------------------------------------------------------------------------------
 focinho_position_x = tracking_data[focinho_x_pos].rename('focinho_position_x')
 focinho_position_y = tracking_data[focinho_y_pos].rename('focinho_position_y')
 orelha_E_position_x = tracking_data[orelha_E_x_pos].rename('orelha_E_position_x')
@@ -146,24 +146,106 @@ try:
 except AssertionError:
    raise ValueError("The position data must have the same length.")
 
-center_of_mass_position_x = (focinho_position_x + orelha_E_position_x + orelha_D_position_x + centro_position_x + rabo_position_x) / 5
-center_of_mass_position_y = (focinho_position_y + orelha_E_position_y + orelha_D_position_y + centro_position_y + rabo_position_y) / 5
+center_of_mass_position_x = pd.DataFrame((focinho_position_x + orelha_E_position_x + orelha_D_position_x + centro_position_x + rabo_position_x) / 5).rename(columns={0: 'center_of_mass_position_x'})
+center_of_mass_position_y = pd.DataFrame((focinho_position_y + orelha_E_position_y + orelha_D_position_y + centro_position_y + rabo_position_y) / 5).rename(columns={0: 'center_of_mass_position_y'})
 
-center_of_mass_velocity = pd.DataFrame(np.sqrt(np.diff(center_of_mass_position_x)**2 + np.diff(center_of_mass_position_y)**2)).rename(columns={0: 'center_of_mass_velocity'})
+center_of_mass_velocity = pd.DataFrame(np.sqrt(np.append(0, np.diff(center_of_mass_position_x.values.flatten()))**2 + np.append(0, np.diff(center_of_mass_position_y.values.flatten()))**2)).rename(columns={0: 'center_of_mass_velocity'})
 
-# Movement of center of mass ----------------------------------------------------------------------------------------------------------------------
-center_of_mass_movement_x = pd.DataFrame(np.diff(center_of_mass_position_x)).rename(columns={0: 'center_of_mass_movement_x'})
-center_of_mass_movement_y = pd.DataFrame(np.diff(center_of_mass_position_y)).rename(columns={0: 'center_of_mass_movement_y'})
+# Movement of center of mass ------------------------------------------------------------------------------------------------------------------
+center_of_mass_movement_x = pd.DataFrame(np.append(0, np.diff(center_of_mass_position_x.values.flatten()))).rename(columns={0: 'center_of_mass_movement_x'})
+center_of_mass_movement_y = pd.DataFrame(np.append(0, np.diff(center_of_mass_position_y.values.flatten()))).rename(columns={0: 'center_of_mass_movement_y'})
 
 ## Grooming features extraction
-# Head angle from center/quadril ----------------------------------------------------------------------------------------------------------------------
-head_angle_from_center_quadril = []
+# Head angle from center/quadril --------------------------------------------------------------------------------------------------------------
+head_angle_from_center_quadril = head_angle_from_center # This feature is already calculated
+
+# Center-head distance ------------------------------------------------------------------------------------------------------------------------
+cat1 = (tracking_data[focinho_x_pos] - tracking_data[centro_x_pos])**2
+cat2 = (tracking_data[focinho_y_pos] - tracking_data[centro_y_pos])**2
+center_head_distance = pd.DataFrame(np.sqrt(cat1 + cat2)).rename(columns={0: 'center_head_distance'})
+
+# Center of mass position ---------------------------------------------------------------------------------------------------------------------
+# This feature is already calculated
+
+# Center of mass velocity ---------------------------------------------------------------------------------------------------------------------
+# This feature is already calculated
+
+## Rearing features extraction
+# Head angle from center ----------------------------------------------------------------------------------------------------------------------
+# This feature is already calculated
+
+# Center-head distance ------------------------------------------------------------------------------------------------------------------------
+# This feature is already calculated
+
+# Center of mass position ---------------------------------------------------------------------------------------------------------------------
+# This feature is already calculated
+
+# Center of mass velocity ---------------------------------------------------------------------------------------------------------------------
+# This feature is already calculated
+
+# Nose point position in relation to the center of mass ---------------------------------------------------------------------------------------
+center_of_mass_to_nose_point_x = tracking_data[focinho_x_pos] - center_of_mass_position_x.values.flatten()
+center_of_mass_to_nose_point_y = tracking_data[focinho_y_pos] - center_of_mass_position_y.values.flatten()
+center_of_mass_to_nose_distance = pd.DataFrame(np.sqrt(center_of_mass_to_nose_point_x**2 + center_of_mass_to_nose_point_y**2)).rename(columns={0: 'center_of_mass_to_nose_distance'})
+
+## Save the features into separate folders and csv files for each feature set
+# Create the folders
+features_folders = ['sniffing_features', 'resting_locomotion_features', 'grooming_features', 'rearing_features']
+for folder in features_folders:
+   if not os.path.exists(os.path.abspath(os.path.join(os.path.dirname(__file__), folder))):
+      os.makedirs(os.path.abspath(os.path.join(os.path.dirname(__file__), folder)))
 
 
+# Create a dataframe for each feature set
+sniffing_features = pd.concat([head_angle_from_center, nose_point_disappearance, nose_point_velocity, nose_point_position_x, nose_point_position_y], axis=1)
+resting_features = pd.concat([focinho_x_movement, focinho_y_movement, orelha_E_x_movement, orelha_E_y_movement, orelha_D_x_movement, orelha_D_y_movement, centro_x_movement, centro_y_movement, rabo_x_movement, rabo_y_movement, focinho_velocity, orelha_E_velocity, orelha_D_velocity, centro_velocity, rabo_velocity, center_of_mass_velocity, center_of_mass_movement_x, center_of_mass_movement_y], axis=1)
+locomotion_features = resting_features
+grooming_features = pd.concat([head_angle_from_center_quadril, center_head_distance, center_of_mass_position_x, center_of_mass_position_y, center_of_mass_velocity], axis=1)
+rearing_features = pd.concat([head_angle_from_center, center_head_distance, center_of_mass_position_x, center_of_mass_position_y, center_of_mass_velocity, center_of_mass_to_nose_distance], axis=1)
 
+# Save the features into csv files
+sniffing_features.to_csv(os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), 'sniffing_features')), 'sniffing_features.csv'))
 
+# Dictionary of all DataFrames with their names
+dataframes = {
+    "head_angle_from_center": head_angle_from_center,
+    "nose_point_disappearance": nose_point_disappearance,
+    "nose_point_velocity": nose_point_velocity,
+    "nose_point_position_x": nose_point_position_x,
+    "nose_point_position_y": nose_point_position_y,
+    "focinho_x_movement": focinho_x_movement,
+    "focinho_y_movement": focinho_y_movement,
+    "orelha_E_x_movement": orelha_E_x_movement,
+    "orelha_E_y_movement": orelha_E_y_movement,
+    "orelha_D_x_movement": orelha_D_x_movement,
+    "orelha_D_y_movement": orelha_D_y_movement,
+    "centro_x_movement": centro_x_movement,
+    "centro_y_movement": centro_y_movement,
+    "rabo_x_movement": rabo_x_movement,
+    "rabo_y_movement": rabo_y_movement,
+    "focinho_velocity": focinho_velocity,
+    "orelha_E_velocity": orelha_E_velocity,
+    "orelha_D_velocity": orelha_D_velocity,
+    "centro_velocity": centro_velocity,
+    "rabo_velocity": rabo_velocity,
+    "center_of_mass_position_x": center_of_mass_position_x,
+    "center_of_mass_position_y": center_of_mass_position_y,
+    "center_of_mass_velocity": center_of_mass_velocity,
+    "center_of_mass_movement_x": center_of_mass_movement_x,
+    "center_of_mass_movement_y": center_of_mass_movement_y,
+    "center_head_distance": center_head_distance,
+    "center_of_mass_to_nose_distance": center_of_mass_to_nose_distance,
+}
 
+# Get row counts
+row_counts = {name: df.shape[0] for name, df in dataframes.items()}
 
+# Check for inconsistencies
+unique_counts = set(row_counts.values())
 
-temporary_dataframe = pd.DataFrame([head_angle_from_center, nose_point_disappearance, nose_point_velocity, nose_point_position], columns=['head_angle_from_center', 'nose_point_disappearance', 'nose_point_velocity', 'nose_point_position'])
-
+if len(unique_counts) == 1:
+    print(f"\n✅ All DataFrames have the same number of rows: {list(unique_counts)[0]}")
+else:
+    print("\n❌ DataFrames have different row counts!")
+    for name, count in row_counts.items():
+        print(f"{name}: {count} rows")
