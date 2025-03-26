@@ -47,14 +47,21 @@ tracking_data_files_sleap = [os.path.join(raw_position_data_sleap, file) for fil
 logging.info(f"Tracking data file found: {len(tracking_data_files_sleap)}")
 
 for tracking_data_file in tracking_data_files_sleap:
-   split_sleap_prefix_re = re.compile(r"^[A-Za-z]{6}.v[0-9]{0,6}.[0-9]{0,6}_((?:.*?))\.analysis")
-   current_animal_name = split_sleap_prefix_re.match(Path(tracking_data_file).stem).groups()[0]
-   
-   if not current_animal_name:
+   split_sleap_prefix_re = re.compile(r"[A-Za-z]{1}\d{0,99}[TRtrTTttREre]{2} \d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-[A-Za-z]{1}\d{0,99}")
+   try:
+      current_animal_name = split_sleap_prefix_re.search(Path(tracking_data_file).stem)[0]
+   except AttributeError:
       logging.error(f"Error extracting animal name from file: {tracking_data_file}")
       logging.error(f"Perhaps the file name format is incorrect.")
       logging.error(f"Regex used was {split_sleap_prefix_re}")
       exit()
+   finally:
+      if current_animal_name == None:
+         logging.error(f"Error extracting animal name from file: {tracking_data_file}")
+         logging.error(f"Perhaps the file name format is incorrect.")
+         logging.error(f"Regex used was {split_sleap_prefix_re}")
+         exit()
+   
    
    logging.info(f"======================================== Starting feature extraction for {current_animal_name} ========================================")
 
