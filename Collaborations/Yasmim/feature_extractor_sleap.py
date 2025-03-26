@@ -100,11 +100,11 @@ for tracking_data_file in tracking_data_files_sleap:
    head_angle_from_center = []
    for x1, y1, x2, y2 in zip(tracking_data[centro_x_pos], tracking_data[centro_y_pos], tracking_data[focinho_x_pos], tracking_data[focinho_y_pos]):
       head_angle_from_center.append(angle_between_points(x1, y1, x2, y2))
-   head_angle_from_center = pd.DataFrame(head_angle_from_center, columns=['head_angle_from_center'])
+   head_angle_from_center = pd.DataFrame(head_angle_from_center, columns=['head_angle_from_center']).fillna(0)
    logging.info("Head angle from center calculated.")
 
    # Nose point disappearance --------------------------------------------------------------------------------------------------------------------
-   nose_point_disappearance = (tracking_data[focinho_p] < 0.4).astype(int).rename('nose_point_disappearance')
+   nose_point_disappearance = (tracking_data[focinho_p] < 0.4).astype(int).rename('nose_point_disappearance').fillna(0)
    logging.info("Nose point disappearance feature extracted.")
 
    # Nose point velocity -------------------------------------------------------------------------------------------------------------------------
@@ -112,8 +112,8 @@ for tracking_data_file in tracking_data_files_sleap:
    logging.info("Nose point velocity feature extracted.")
 
    # Nose point position -------------------------------------------------------------------------------------------------------------------------
-   nose_point_position_x = tracking_data[focinho_x_pos].rename('nose_point_position_x')
-   nose_point_position_y = tracking_data[focinho_y_pos].rename('nose_point_position_y')
+   nose_point_position_x = tracking_data[focinho_x_pos].rename('nose_point_position_x').fillna(0)
+   nose_point_position_y = tracking_data[focinho_y_pos].rename('nose_point_position_y').fillna(0)
    logging.info("Nose point position feature extracted.")
 
    logging.info("Starting Resting and Locomotion feature extraction.")
@@ -140,16 +140,16 @@ for tracking_data_file in tracking_data_files_sleap:
    logging.info("Velocity of points features extracted.")
 
    # Center of mass velocity ------------------------------------------------------------------------------------------------------------------
-   focinho_position_x = tracking_data[focinho_x_pos].rename('focinho_position_x')
-   focinho_position_y = tracking_data[focinho_y_pos].rename('focinho_position_y')
-   orelha_E_position_x = tracking_data[orelha_E_x_pos].rename('orelha_E_position_x')
-   orelha_E_position_y = tracking_data[orelha_E_y_pos].rename('orelha_E_position_y')
-   orelha_D_position_x = tracking_data[orelha_D_x_pos].rename('orelha_D_position_x')
-   orelha_D_position_y = tracking_data[orelha_D_y_pos].rename('orelha_D_position_y')
-   centro_position_x = tracking_data[centro_x_pos].rename('centro_position_x')
-   centro_position_y = tracking_data[centro_y_pos].rename('centro_position_y')
-   rabo_position_x = tracking_data[rabo_x_pos].rename('rabo_position_x')
-   rabo_position_y = tracking_data[rabo_y_pos].rename('rabo_position_y')
+   focinho_position_x = tracking_data[focinho_x_pos].rename('focinho_position_x').fillna(0)
+   focinho_position_y = tracking_data[focinho_y_pos].rename('focinho_position_y').fillna(0)
+   orelha_E_position_x = tracking_data[orelha_E_x_pos].rename('orelha_E_position_x').fillna(0)
+   orelha_E_position_y = tracking_data[orelha_E_y_pos].rename('orelha_E_position_y').fillna(0)
+   orelha_D_position_x = tracking_data[orelha_D_x_pos].rename('orelha_D_position_x').fillna(0)
+   orelha_D_position_y = tracking_data[orelha_D_y_pos].rename('orelha_D_position_y').fillna(0)
+   centro_position_x = tracking_data[centro_x_pos].rename('centro_position_x').fillna(0)
+   centro_position_y = tracking_data[centro_y_pos].rename('centro_position_y').fillna(0)
+   rabo_position_x = tracking_data[rabo_x_pos].rename('rabo_position_x').fillna(0)
+   rabo_position_y = tracking_data[rabo_y_pos].rename('rabo_position_y').fillna(0)
 
    try:
       assert len(focinho_position_x) == len(focinho_position_y) == len(orelha_E_position_x) == len(orelha_E_position_y) == len(orelha_D_position_x) == len(orelha_D_position_y) == len(centro_position_x) == len(centro_position_y) == len(rabo_position_x) == len(rabo_position_y)
@@ -158,7 +158,7 @@ for tracking_data_file in tracking_data_files_sleap:
 
    center_of_mass_position_x = pd.DataFrame((focinho_position_x + orelha_E_position_x + orelha_D_position_x + centro_position_x + rabo_position_x) / 5).rename(columns={0: 'center_of_mass_position_x'})
    center_of_mass_position_y = pd.DataFrame((focinho_position_y + orelha_E_position_y + orelha_D_position_y + centro_position_y + rabo_position_y) / 5).rename(columns={0: 'center_of_mass_position_y'})
-   center_of_mass_velocity = pd.DataFrame(np.sqrt(center_of_mass_position_x.diff().fillna(0).values.flatten()**2 + center_of_mass_position_y.diff().fillna(0).values.flatten()**2)).rename(columns={0: 'center_of_mass_velocity'})
+   center_of_mass_velocity = pd.DataFrame(np.sqrt(center_of_mass_position_x.diff().fillna(0).values.flatten()**2 + center_of_mass_position_y.diff().fillna(0).values.flatten()**2)).rename(columns={0: 'center_of_mass_velocity'}).fillna(0)
    logging.info("Center of mass velocity features extracted.")
 
    # Movement of center of mass ------------------------------------------------------------------------------------------------------------------
@@ -174,19 +174,19 @@ for tracking_data_file in tracking_data_files_sleap:
    # Center-head distance ------------------------------------------------------------------------------------------------------------------------
    cat1 = (tracking_data[focinho_x_pos] - tracking_data[centro_x_pos])**2
    cat2 = (tracking_data[focinho_y_pos] - tracking_data[centro_y_pos])**2
-   center_head_distance = pd.DataFrame(np.sqrt(cat1 + cat2)).rename(columns={0: 'center_head_distance'})
+   center_head_distance = pd.DataFrame(np.sqrt(cat1 + cat2)).rename(columns={0: 'center_head_distance'}).fillna(0)
    logging.info("Center-head distance feature extracted.")
 
    # Center-left hip distance ---------------------------------------------------------------------------------------------------------------------
    cat_1_focinho_cintura_esquerda = (tracking_data[focinho_x_pos] - tracking_data[cintura_esquerda_x_pos])**2
    cat_2_focinho_cintura_esquerda = (tracking_data[focinho_y_pos] - tracking_data[cintura_esquerda_y_pos])**2
-   center_left_hip_distance = pd.DataFrame(np.sqrt(cat_1_focinho_cintura_esquerda + cat_2_focinho_cintura_esquerda)).rename(columns={0: 'center_left_hip_distance'})
+   center_left_hip_distance = pd.DataFrame(np.sqrt(cat_1_focinho_cintura_esquerda + cat_2_focinho_cintura_esquerda)).rename(columns={0: 'center_left_hip_distance'}).fillna(0)
    logging.info("Center-left hip distance feature extracted.")
 
    # Center-right hip distance --------------------------------------------------------------------------------------------------------------------
    cat_1_focinho_cintura_direita = (tracking_data[focinho_x_pos] - tracking_data[cintura_direita_x_pos])**2
    cat_2_focinho_cintura_direita = (tracking_data[focinho_y_pos] - tracking_data[cintura_direita_y_pos])**2
-   center_right_hip_distance = pd.DataFrame(np.sqrt(cat_1_focinho_cintura_direita + cat_2_focinho_cintura_direita)).rename(columns={0: 'center_right_hip_distance'})
+   center_right_hip_distance = pd.DataFrame(np.sqrt(cat_1_focinho_cintura_direita + cat_2_focinho_cintura_direita)).rename(columns={0: 'center_right_hip_distance'}).fillna(0)
    logging.info("Center-right hip distance feature extracted.")
 
    # Center of mass position ---------------------------------------------------------------------------------------------------------------------
@@ -212,7 +212,7 @@ for tracking_data_file in tracking_data_files_sleap:
    # Nose point position in relation to the center of mass ---------------------------------------------------------------------------------------
    center_of_mass_to_nose_point_x = tracking_data[focinho_x_pos] - center_of_mass_position_x.values.flatten()
    center_of_mass_to_nose_point_y = tracking_data[focinho_y_pos] - center_of_mass_position_y.values.flatten()
-   center_of_mass_to_nose_distance = pd.DataFrame(np.sqrt(center_of_mass_to_nose_point_x**2 + center_of_mass_to_nose_point_y**2)).rename(columns={0: 'center_of_mass_to_nose_distance'})
+   center_of_mass_to_nose_distance = pd.DataFrame(np.sqrt(center_of_mass_to_nose_point_x**2 + center_of_mass_to_nose_point_y**2)).rename(columns={0: 'center_of_mass_to_nose_distance'}).fillna(0)
    logging.info("Center of mass to nose distance feature extracted.")
    logging.info("Feature extraction complete.")
 
@@ -230,11 +230,11 @@ for tracking_data_file in tracking_data_files_sleap:
 
    logging.info("Generating DataFrames for each feature set.")
    # Create a dataframe for each feature set
-   sniffing_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), head_angle_from_center, nose_point_disappearance, nose_point_velocity, nose_point_position_x, nose_point_position_y], axis=1)
-   resting_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), focinho_x_movement, focinho_y_movement, orelha_E_x_movement, orelha_E_y_movement, orelha_D_x_movement, orelha_D_y_movement, centro_x_movement, centro_y_movement, rabo_x_movement, rabo_y_movement, focinho_velocity, orelha_E_velocity, orelha_D_velocity, centro_velocity, rabo_velocity, center_of_mass_velocity, center_of_mass_movement_x, center_of_mass_movement_y], axis=1)
+   sniffing_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), head_angle_from_center, nose_point_disappearance, nose_point_velocity, nose_point_position_x, nose_point_position_y], axis=1).fillna(0)
+   resting_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), focinho_x_movement, focinho_y_movement, orelha_E_x_movement, orelha_E_y_movement, orelha_D_x_movement, orelha_D_y_movement, centro_x_movement, centro_y_movement, rabo_x_movement, rabo_y_movement, focinho_velocity, orelha_E_velocity, orelha_D_velocity, centro_velocity, rabo_velocity, center_of_mass_velocity, center_of_mass_movement_x, center_of_mass_movement_y], axis=1).fillna(0)
    locomotion_features = resting_features
-   grooming_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), head_angle_from_center_quadril, center_head_distance, center_of_mass_position_x, center_of_mass_position_y, center_of_mass_velocity], axis=1)
-   rearing_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), head_angle_from_center, center_head_distance, center_of_mass_position_x, center_of_mass_position_y, center_of_mass_velocity, center_of_mass_to_nose_distance], axis=1)
+   grooming_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), head_angle_from_center_quadril, center_head_distance, center_of_mass_position_x, center_of_mass_position_y, center_of_mass_velocity], axis=1).fillna(0)
+   rearing_features = pd.concat([pd.DataFrame([f'"{num}"' for num in range(len(head_angle_from_center))]), head_angle_from_center, center_head_distance, center_of_mass_position_x, center_of_mass_position_y, center_of_mass_velocity, center_of_mass_to_nose_distance], axis=1).fillna(0)
 
    # Add quotes to match the features file template
    sniffing_features.columns = ['""'if col == 0 else f'"{col}"' for col in sniffing_features.columns]
