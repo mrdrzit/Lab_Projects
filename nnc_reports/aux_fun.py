@@ -10,7 +10,7 @@ from pyautogui import click, locateOnScreen, moveTo, hotkey
 locale.setlocale(locale.LC_TIME, "Portuguese_Brazil.1252")
 
 def parse_deadline(date_str):
-    extract_date_regex = r"\b\d{1,2} de (janeiro|fevereiro|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro)( de \d{4})?\b"
+    extract_date_regex = r"\b\d{1,2} de ([Jj]aneiro|[Ff]evereiro|[Mm]arço|[Aa]bril|[Mm]aio|[Jj]unho|[Jj]ulho|[Aa]gosto|[Ss]etembro|[Oo]utubro|[Nn]ovembro|[Dd]ezembro)( de \d{4})?\b"
 
     match = re.search(extract_date_regex, date_str)
     if not match:
@@ -57,16 +57,15 @@ data = pd.read_csv(SHEET_URL)
 
 # Create a new dataframe with parsed deadlines
 data_with_dates = data.copy()
-data_with_dates[COLUMN_APPLICATION_DEADLINE] = data_with_dates[COLUMN_APPLICATION_DEADLINE].astype(str).apply(parse_deadline)
 
 # Filter out opportunities that have already been notified
 unnotified_data = data_with_dates[data_with_dates[COLUMN_ALREADY_NOTIFIED] == 0]
 
 # Drop rows where the deadline couldn't be parsed (NaT values)
-filtered_data = unnotified_data.dropna(subset=[COLUMN_APPLICATION_DEADLINE])
+unnotified_data[COLUMN_APPLICATION_DEADLINE] = unnotified_data[COLUMN_APPLICATION_DEADLINE].astype(str).apply(parse_deadline)
 
 # Reset index to preserve original indices as a column
-filtered_data = filtered_data.reset_index()
+filtered_data = unnotified_data.reset_index()
 
 # Add a column to identify if the deadline is in the current month
 filtered_data['is_current_month'] = filtered_data[COLUMN_APPLICATION_DEADLINE].dt.strftime('%B %Y').apply(lambda x: x.lower()).str.contains(CURRENT_SUMMARY_MONTHS[0], case=False, na=False)
@@ -115,13 +114,13 @@ def findtextbox() -> None:
         # webbrowser.open("https://web.whatsapp.com/accept?code=CnrBPNWyz1Q3BVTTrpgpf6")
     except Exception:
         print("Failed to open whatsapp web")
-    time.sleep(3)
+    # time.sleep(3)
     
-    # Delete previous message
-    hotkey('ctrl', 'a')
-    hotkey('backspace')
+    # # Delete previous message
+    # hotkey('ctrl', 'a')
+    # hotkey('backspace')
     pyperclip.copy(final_message)
-    hotkey('ctrl', 'v')
-    hotkey('enter')
+    # hotkey('ctrl', 'v')
+    # hotkey('enter')
 
 findtextbox()
