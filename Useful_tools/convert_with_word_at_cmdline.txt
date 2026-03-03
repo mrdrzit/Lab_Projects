@@ -1,15 +1,79 @@
-This script is used to convert a .rtf file to .html file. 
-It is necessary to have Microsoft Word installed on the computer as it uses the Word application to convert the file
-creating an instance of the application and using it to open the file and save it in .html format and 
-then close the application.
+RTF to HTML Conversion Using Microsoft Word (Command-Line)
+===========================================================
+
+Description
+-----------
+This script converts a .rtf file to a .html file using Microsoft Word.
+
+Microsoft Word must be installed on the computer because the script:
+- Launches a Word instance
+- Opens the .rtf file
+- Saves it in .html format
+- Closes the application
 
 
----  These are the commands used in the script  ---
+------------------------------------------------------------
 
+Microsoft Word Executable
+-------------------------
 "C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE"
+
+This is the full path to the Microsoft Word executable.
+
+
+------------------------------------------------------------
+
+Example Input File
+------------------
 "C:\Users\uzuna\Área de Trabalho\convert\intro01.rtf"
+
+This is the full path to the .rtf file that will be converted.
+
+
+------------------------------------------------------------
+
+Word Command-Line Options Used
+------------------------------
+/q                : Start Word without displaying the splash screen
+/n                : Start a new instance of Word
+/mFilePrintDefault: Execute the default print macro
+/mFileExit        : Exit Word after executing the macro
+/mFileSaveAs      : Execute the Save As macro
+
+
+------------------------------------------------------------
+
+Command Variations Used in the Script
+-------------------------------------
+
+1) Launch Word
+"C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE"
+
+
+2) Open the RTF file
+"C:\Users\uzuna\Área de Trabalho\convert\intro01.rtf"
+
+
+3) Launch Word silently and exit
 /q /n /mFilePrintDefault /mFileExit
-/q /n FileSaveHtml
+
+
+4) Save as HTML (macro reference)
 FileSaveHtml
 
+
+5) Full command example
 "C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE" "C:\Users\uzuna\Área de Trabalho\convert\intro01.rtf" /q /n /mFileSaveAs /mFileExit
+
+
+------------------------------------------------------------
+
+Summary
+-------
+The complete process:
+1. Word is launched.
+2. The .rtf file is opened.
+3. A Save As operation is executed (to HTML format).
+4. Word exits automatically.
+
+Microsoft Word performs the conversion internally.

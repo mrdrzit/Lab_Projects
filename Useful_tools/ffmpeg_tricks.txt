@@ -1,115 +1,141 @@
-Command to crop with ffmpeg 
+FFmpeg / FFplay Command Cheatsheet
+=================================
 
+1) Crop a video (single file)
+-----------------------------
+Command:
 ffmpeg -i in.mp4 -filter:v "crop=out_w:out_h:x:y" out.mp4
 
-Where the options are as follows:
+Options:
+- out_w : width of the output rectangle
+- out_h : height of the output rectangle
+- x     : x coordinate of the top-left corner of the crop (origin is (0,0) at the top-left of the input)
+- y     : y coordinate of the top-left corner of the crop (origin is (0,0) at the top-left of the input)
 
-    out_w is the width of the output rectangle
-    out_h is the height of the output rectangle
-    x and y specify the top left corner of the output rectangle (coordinates start at (0,0) in the top left corner of the input)
 
 ---------------------------------------
 
-Command to batch crop with ffmpeg
-
+2) Batch crop videos (current folder)
+-------------------------------------
+Command (template):
 for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=out_w:out_h:x:y" "%~ni_cropped.mp4"
+
+Command (example):
 for %i in (*.mp4) do ffmpeg -i "%i" -filter:v "crop=1090:1075:415:4" "%~ni_cropped.mp4"
 
-Where the options are as follows:
+Options:
+- out_w : width of the output rectangle
+- out_h : height of the output rectangle
+- x     : x coordinate of the top-left corner of the crop (origin is (0,0) at the top-left of the input)
+- y     : y coordinate of the top-left corner of the crop (origin is (0,0) at the top-left of the input)
+- "%~ni_cropped.mp4" : output file name ("%~ni" expands to the input filename without its extension)
 
-    out_w is the width of the output rectangle
-    out_h is the height of the output rectangle
-    x and y specify the top left corner of the output rectangle (coordinates start at (0,0) in the top left corner of the input)
-    "%~ni.mp4" is the output file name ("%~ni" outputs a file name without the extension)
 
 ---------------------------------------
 
-Command to rotate multiple videos by x amount in degrees
-
+3) Rotate multiple videos (metadata rotation)
+---------------------------------------------
+Command:
 for %i in (*.mp4) do ffmpeg -display_rotation 90 -i "%i" -codec copy "%~ni_rotated.mp4"
 
-Where the options are as follows:
+Options:
+- -display_rotation 90 : sets rotation metadata to 90 degrees
+- -codec copy          : copies streams without re-encoding
+- "%~ni_rotated.mp4"   : output file name ("%~ni" expands to the input filename without its extension)
 
-    -vf "rotate=270" is the video filter to rotate the video by 270 degrees
-    "%~ni.mp4" is the output file name ("%~ni" outputs a file name without the extension)
 
 ---------------------------------------
 
-Command to preview a crop using ffplay
-
+4) Preview a crop (ffplay)
+--------------------------
+Command:
 ffplay -i input -vf "crop=out_w:out_h:x:y"
 
-Where the options are as follows:
+Options:
+- out_w : width of the output rectangle
+- out_h : height of the output rectangle
+- x     : x coordinate of the top-left corner of the crop (origin is (0,0) at the top-left of the input)
+- y     : y coordinate of the top-left corner of the crop (origin is (0,0) at the top-left of the input)
 
-    out_w is the width of the output rectangle
-    out_h is the height of the output rectangle
-    x and y specify the top left corner of the output rectangle (coordinates start at (0,0) in the top left corner of the input)
 
 ---------------------------------------
 
-Settings to convert videos in the encoding settings for the DeepLabCut
-
+5) Convert videos for DeepLabCut (batch MOV -> MP4, H.265)
+----------------------------------------------------------
+Command:
 for %i in (*.mov) do ffmpeg -i "%i" -c:v libx265 -preset fast -crf 18 -an "%~ni_downsampled.mp4"
-  
-  Where the options are as follows:
-  
-      -c:v libx265 is the video codec
-      -preset fast is the encoding speed
-      -crf 18 is the quality
-      -an is to remove the audio codec
-      "%~ni.mp4" is the output file name ("%~ni" outputs a file name without the extension)
+
+Options:
+- -c:v libx265 : video codec (H.265/HEVC)
+- -preset fast : encoding speed preset
+- -crf 18      : quality setting (lower = higher quality)
+- -an          : remove audio
+- "%~ni_downsampled.mp4" : output file name ("%~ni" expands to the input filename without its extension)
+
 
 ---------------------------------------
 
-Command to extract one frame from all videos in the folder (To extract cropping dimensions)
-
+6) Extract the first frame from all videos (for checking crop dimensions)
+-------------------------------------------------------------------------
+Command:
 if not exist "screenshots" mkdir screenshots & for /r %f in (*.mp4) do ffmpeg -i "%f" -vf "select=eq(n\,0)" -frames:v 1 "./screenshots/%~nf.jpg"
 
-  Where the options are as follows:
-    
-    "if not exist "screenshots" mkdir screenshots" is to create a folder called "screenshots" if it doesn't exist
-    for /r %f in (*.mp4) do ffmpeg -i "%f" -vf "select=eq(n\,0)" -frames:v 1 "./screenshots/%~nf.jpg" is to extract one frame from all videos in the folder
-    -vf "select=eq(n\,0)" is to select the first frame
-    -frames:v 1 is to select the first frame
-    "./screenshots/%~nf.jpg" is the output file name ("%~nf" outputs a file name without the extension)
+Options:
+- if not exist "screenshots" mkdir screenshots : create the "screenshots" folder if it doesn't exist
+- for /r %f in (*.mp4) do ...                : run recursively for all .mp4 files
+- -vf "select=eq(n\,0)"                      : select the first frame
+- -frames:v 1                                : output exactly one frame
+- "./screenshots/%~nf.jpg"                   : output name ("%~nf" expands to the input filename without its extension)
 
 
-Command to concatenate two or more videos with ffmpeg 
+---------------------------------------
 
--- First we create a list of files using the following command:
+7) Concatenate two or more videos (stream copy)
+-----------------------------------------------
+Step 1: Create list.txt (example command):
 (echo file 'first file.mp4' & echo file 'second file.mp4' )>list.txt
-or create it manually to this format:
 
+Or create list.txt manually in this format:
 file 'first file.mp4'
 file 'second file.mp4'
 etc...
 
--- Then we concatenate the files using the following command:
+Step 2: Concatenate:
 ffmpeg -safe 0 -f concat -i list.txt -c copy output.mp4
 
-    Where the options are as follows:
-
-        -safe 0 is to allow absolute paths
-        -f concat is to specify the format as concat
-        -i list.txt is to specify the input files
-        -c copy is to copy the streams directly
-        output.mp4 is the output file name
+Options:
+- -safe 0     : allow absolute paths in list.txt
+- -f concat   : use concat demuxer
+- -i list.txt : input file list
+- -c copy     : copy streams without re-encoding
+- output.mp4  : output file name
 
 
 ---------------------------------------
 
-Command to cut a video with ffmpeg using the start and end time in seconds
-
+8) Cut a video using start and end time (stream copy)
+-----------------------------------------------------
+Command:
 ffmpeg -i input.mp4 -ss START_TIME -to END_TIME -c copy output.mp4
 
-    Where the options are as follows:
-
-        -ss START_TIME is the start time in seconds or in hh:mm:ss[.xxx] format
-        -to END_TIME is the end time in seconds or in hh:mm:ss[.xxx] format
-        -c copy is to copy the streams directly
-        output.mp4 is the output file name
-
+Options:
+- -ss START_TIME : start time (seconds or hh:mm:ss[.xxx])
+- -to END_TIME   : end time (seconds or hh:mm:ss[.xxx])
+- -c copy        : copy streams without re-encoding
+- output.mp4     : output file name
 
 
+---------------------------------------
 
+9) Re-encode to H.264 (overwrite output)
+----------------------------------------
+Command:
 ffmpeg -y -i "input.mp4" -c:v libx264 -pix_fmt yuv420p -preset superfast -crf 23 "output.mp4"
+
+Options:
+- -y                : overwrite output file if it exists
+- -c:v libx264       : video codec (H.264)
+- -pix_fmt yuv420p   : pixel format for broad compatibility
+- -preset superfast  : encoding speed preset
+- -crf 23            : quality setting (lower = higher quality)
+- "output.mp4"       : output file name
